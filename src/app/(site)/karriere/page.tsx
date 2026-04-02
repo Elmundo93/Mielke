@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getJobs } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Karriere | Sanitätshaus Mielke",
@@ -22,114 +23,18 @@ export const metadata: Metadata = {
   },
 };
 
-// ─── Stellendaten ─────────────────────────────────────────────────────────────
-
-const jobs = [
-  {
-    id: "aussendienst-reha",
-    category: "Außendienst",
-    categoryColor: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    title: "Außendienstmitarbeiter (m/w/d) – Rehadienstleistungen & Lieferungen",
-    location: "Raum Witzenhausen / Nordhessen",
-    type: "Vollzeit",
-    start: "Ab sofort",
-    summary:
-      "Sie sind das Gesicht von Sanitätshaus Mielke bei unseren Kunden zu Hause. Sie liefern und passen Hilfsmittel direkt beim Patienten an, begleiten ihn durch den Versorgungsprozess und sind zuverlässiger Ansprechpartner im Außendienst.",
-    tasks: [
-      "Lieferung, Aufbau und Einweisung von Hilfsmitteln (Rollstühle, Gehhilfen, Pflegebetten, etc.) beim Kunden vor Ort",
-      "Durchführung von Hausbesuchen zur Beratung und Nachversorgung",
-      "Koordination und Dokumentation der Versorgungsaufträge",
-      "Enge Zusammenarbeit mit Sanitätshaus, Werkstatt und Pflegediensten",
-      "Abholung und Rücknahme von Hilfsmitteln inkl. Reinigungsprotokoll",
-      "Fuhrparkpflege und Tourenvorbereitung",
-    ],
-    requirements: [
-      "Führerschein Klasse B (zwingend erforderlich)",
-      "Erfahrung in der Pflege, im Sanitätsfachhandel oder Lieferlogistik von Vorteil",
-      "Freundliches, einfühlsames Auftreten im Umgang mit Patienten und Angehörigen",
-      "Selbstständige, zuverlässige Arbeitsweise",
-      "Körperliche Belastbarkeit (Heben und Tragen von Hilfsmitteln)",
-      "Bereitschaft zu geregelten Außendienstterminen (kein Schichtdienst)",
-    ],
-    offer: [
-      "Firmenfahrzeug (auch zur privaten Nutzung nach Absprache)",
-      "Einarbeitung durch erfahrene Kollegen",
-      "Geregelte Arbeitszeiten, kein Wochenenddienst",
-      "Sicherer Arbeitsplatz in einem regional verwurzelten Unternehmen",
-      "Leistungsgerechte Vergütung + Spesen",
-    ],
-  },
-  {
-    id: "sanitaetshaus-fachkraft",
-    category: "Sanitätshaus",
-    categoryColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    title: "Fachkraft im Sanitätshaus (m/w/d) – Kundenberatung & Versorgung",
-    location: "Einer unserer 4 Standorte in Nordhessen",
-    type: "Vollzeit oder Teilzeit",
-    start: "Nach Vereinbarung",
-    summary:
-      "Im direkten Kundenkontakt beraten Sie Menschen mit dem Ziel, ihre Lebensqualität zu verbessern. Von der Kompressionsversorgung über Bandagen bis zu Inkontinenzprodukten – Sie kennen unser Sortiment und begleiten Kunden mit Fachwissen und Herz.",
-    tasks: [
-      "Beratung und Versorgung von Kunden im Sanitätshaus (Kompression, Bandagen, Orthesen, Inkontinenz, Pflegehilfsmittel u. v. m.)",
-      "Aufnahme und Weiterleitung von Rezepten sowie Kostenvoranschlägen",
-      "Anlegen von Kompressionsstrümpfen und Messungen",
-      "Kassenabrechnung und Dokumentation von Hilfsmittelversorgungen",
-      "Warenpräsentation, Bestandspflege und Lagerhaltung",
-      "Enge Abstimmung mit Werkstatt und Außendienst",
-    ],
-    requirements: [
-      "Abgeschlossene Ausbildung als Kaufmann/-frau im Gesundheitswesen, Sanitätsfachkraft, MFA, Pflegefachkraft oder vergleichbar",
-      "Freude am Umgang mit Menschen, insbesondere mit älteren und pflegebedürftigen Kunden",
-      "Empathie, Geduld und ein sicheres, professionelles Auftreten",
-      "Grundkenntnisse in MS Office und idealerweise Erfahrung mit Sanitätshaussoftware",
-      "Teamfähigkeit und Zuverlässigkeit",
-    ],
-    offer: [
-      "Abwechslungsreiche Tätigkeit mit direktem Patientenkontakt",
-      "Strukturierte Einarbeitung und regelmäßige Weiterbildungen",
-      "Familiäres Arbeitsumfeld mit kurzen Entscheidungswegen",
-      "Flexible Teilzeitmodelle möglich",
-      "Mitarbeiterrabatt auf Produkte des Sanitätshauses",
-    ],
-  },
-  {
-    id: "buerokraft",
-    category: "Büro & Verwaltung",
-    categoryColor: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
-    title: "Bürokraft / Verwaltungsmitarbeiter (m/w/d) – Abrechnung & Organisation",
-    location: "Hauptfiliale Witzenhausen",
-    type: "Vollzeit oder Teilzeit",
-    start: "Nach Vereinbarung",
-    summary:
-      "Im Hintergrund halten Sie den Betrieb am Laufen: von der Krankenkassenabrechnung über die Auftragsbearbeitung bis zum Büroorganisation. Sie sind die administrative Schnittstelle zwischen Kunden, Kassen und unserem Team.",
-    tasks: [
-      "Abrechnung mit gesetzlichen und privaten Krankenkassen (Hilfsmittelabrechnung)",
-      "Bearbeitung und Verwaltung von Rezepten, Kostenvoranschlägen und Genehmigungen",
-      "Allgemeine Büroorganisation: Postbearbeitung, Ablage, Korrespondenz",
-      "Telefonische und schriftliche Kommunikation mit Kunden, Ärzten und Kostenträgern",
-      "Datenpflege in der Sanitätshaussoftware",
-      "Unterstützung bei der Buchhaltungsvorbereitung und dem Bestellwesen",
-    ],
-    requirements: [
-      "Abgeschlossene kaufmännische Ausbildung (z. B. Bürokaufmann/-frau, MFA, Kaufmann/-frau im Gesundheitswesen)",
-      "Erfahrung in der Abrechnung mit Krankenkassen von Vorteil",
-      "Sicherer Umgang mit MS Office (Word, Excel, Outlook)",
-      "Strukturierte, gewissenhafte Arbeitsweise und hohe Genauigkeit",
-      "Teamgeist und Kommunikationsstärke",
-    ],
-    offer: [
-      "Geregelte Bürozeiten, kein Schichtdienst",
-      "Sicherer, langfristiger Arbeitsplatz",
-      "Einarbeitung in branchenspezifische Software",
-      "Kollegiales, respektvolles Arbeitsklima",
-      "Möglichkeit zur Weiterbildung im Gesundheitsbereich",
-    ],
-  },
-];
+const CATEGORY_COLORS: Record<string, string> = {
+  "Außendienst": "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  "Sanitätshaus": "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  "Büro & Verwaltung": "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+};
 
 // ─── Seite ────────────────────────────────────────────────────────────────────
 
-export default function KarrierePage() {
+export default async function KarrierePage() {
+  const allJobs = await getJobs();
+  const jobs = allJobs.filter((j) => j.active);
+
   return (
     <div className="bg-white dark:bg-gray-950 min-h-screen">
       {/* Hero */}
@@ -189,7 +94,7 @@ export default function KarrierePage() {
             <div className="px-8 pt-7 pb-5 border-b border-gray-100 dark:border-gray-800">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-3 ${job.categoryColor}`}>
+                  <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-3 ${CATEGORY_COLORS[job.category] ?? "bg-gray-100 text-gray-700"}`}>
                     {job.category}
                   </span>
                   <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white leading-snug">

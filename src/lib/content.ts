@@ -35,6 +35,20 @@ export type Service = {
   heroImage?: string;
 };
 
+export type Job = {
+  id: string;
+  active: boolean;
+  category: string;
+  title: string;
+  location: string;
+  type: string;
+  start: string;
+  summary: string;
+  tasks: string[];
+  requirements: string[];
+  offer: string[];
+};
+
 export type AboutUsContent = {
   title: string;
   hero: {
@@ -129,6 +143,17 @@ export async function getAllServices(): Promise<Service[]> {
 export async function getService(slug: Service["slug"]): Promise<Service | null> {
   const all = await getAllServices();
   return all.find(s => s.slug === slug) ?? null;
+}
+
+export async function getJobs(): Promise<Job[]> {
+  try {
+    const p = path.join(CONTENT_DIR, "karriere", "jobs.json");
+    const raw = await fs.readFile(p, "utf8");
+    return JSON.parse(raw) as Job[];
+  } catch (err) {
+    console.error("Error loading jobs:", err);
+    return [];
+  }
 }
 
 export async function getAboutUsContent(): Promise<AboutUsContent | null> {
