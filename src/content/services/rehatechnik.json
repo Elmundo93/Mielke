@@ -1,0 +1,53 @@
+{
+  "slug": "rehatechnik",
+  "title": "Rehatechnik",
+  "intro": "Mobilität und Selbstständigkeit fördern.",
+  "benefits": [],
+  "heroImage": "/RehatechnikServiceImage.jpg",
+  "content": "Kommen Sie wieder auf die Beine – Unabhängigkeit sollte nicht vom Preis abhängig sein.\n\nEgal ob nach einem Unfall, einem Schlaganfall, nach Krankheit, ob chronisch Kranken oder für Menschen mit Behinderung, wir möchten Ihnen helfen „wieder auf die Beine“ zu kommen.\n\nWir bieten Ihnen eine große Auswahl an Rehabilitationstechnik, von Rollstühlen und Gehilfen über Elektromobile und Treppenlifte bis hin zu Sitzkissen, Spezialmatratzen und sogar spezielle Rehabiltionstechnik für Kinder.\n\nUnser kompetentes und erfahrenes Team berät Sie gerne dazu in einer unserer vier Filialen oder auch bei Ihnen Zuhause. Selbstverständlich zählt auch ein kostenloser Lieferservice zu unseren Inklusiv-Leistungen dazu.",
+  "categories": [
+    {
+      "title": "Mobilitätshilfen",
+      "items": [
+        "Rollatoren aller Art",
+        "Rollstühle aller Art",
+        "Elektromobile",
+        "Anschubhilfen"
+      ]
+    },
+    {
+      "title": "Bett- und Liegehilfen",
+      "items": [
+        "Pflegebetten und elektrisch verstellbare Einlegerahmen",
+        "Wechseldruck- und Weichschaummatratzen",
+        "Sitzkissen"
+      ]
+    },
+    {
+      "title": "Bade- und Toilettenhilfen",
+      "items": [
+        "Toilettenstühle",
+        "Toilettensitzerhöhungen",
+        "Badewannenlifter",
+        "Duschhocker- und stühle",
+        "Haltegriffe"
+      ]
+    },
+    {
+      "title": "Lift- und Hebehilfen",
+      "items": [
+        "Hebelifter",
+        "Treppenlifter"
+      ]
+    },
+    {
+      "title": "Spezialausrüstung",
+      "items": [
+        "Sauerstoffkonzentratoren",
+        "Kinder-Reha"
+      ]
+    }
+  ],
+  "note": "Beratung und Lieferservice auch bei Ihnen zu Hause möglich."
+}
+

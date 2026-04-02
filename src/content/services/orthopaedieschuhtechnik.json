@@ -1,0 +1,33 @@
+{
+  "slug": "orthopaedieschuhtechnik",
+  "title": "Orthopädieschuhtechnik",
+  "intro": "Einlagen und Maßschuhe.",
+  "benefits": [],
+  "heroImage": "/OrthopädieschuhtechnikServiceImage.jpeg",
+  "content": "In der Orthopädie-Schuhtechnik werden individuelle und nach maßgefertigte orthopädische Schuhe und Einlagen, für Diabetiker, Therapiebedürftige, Kinder und Erwachsene gefertigt. Diese sollen vor allem bequem sein, Gang- und Standfähigkeit und somit Ihr eigenes Wohlbefinden verbessern, Schmerzen lindern, aber auch präventiv vor Stürzen schützen, damit Sie sich zu Fuß sicher fühlen und wieder Freude am Gehen und ihrer Mobilität gewinnen.\n\nNach einem umfassenden Beratungsgespräch, genauer Vermessung mit Scans und Abdrücken, können wir Ihnen handgefertigte und qualitativ hochwertige orthopädischen Schuhe nach Maß fertigen.",
+  "categories": [
+    {
+      "title": "Einlagen",
+      "items": [
+        "Fußdruckmessung mit Ganganalyse",
+        "Einlagenanfertigung nach Abdruck",
+        "spezielle Einlagen für Diabetiker",
+        "Sensomotorische Einlagen",
+        "Orthopädische Einlagen in verschiedenen Ausführungen (Weichschaum, Kork-Leder, Karbonverstärkung)",
+        "Einlagenzurichtungen (Weichbettungen, Erhöhungen, usw.)",
+        "Einlagen für Sportler"
+      ]
+    },
+    {
+      "title": "Schuhe",
+      "items": [
+        "Diabetikerschuhe",
+        "Orthopädische Schuhe nach Maß",
+        "Therapieschuhe",
+        "Schuhreparaturen",
+        "Schuhzurichtungen"
+      ]
+    }
+  ],
+  "note": "Alle Maßnahmen erfolgen nach ärztlicher Verordnung und in enger Abstimmung mit dem behandelnden Arzt."
+}

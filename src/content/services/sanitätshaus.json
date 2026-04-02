@@ -1,0 +1,111 @@
+{
+  "slug": "sanitaetshaus",
+  "title": "Sanitätshaus",
+  "intro": "Individuelle Hilfsmittelversorgung.",
+  "benefits": [],
+  "heroImage": "/SanitätshausServiceImage.jpg",
+  "content": "In unseren vier Sanitätshäusern in Witzenhausen, Bad Sooden-Allendorf, Großalmerode und Hessisch Lichtenau bieten wir Ihnen ein breites Spektrum an Orthopädie-Technik und Sanitätsbedarf. Wir arbeiten ausschließlich mit namhaften Herstellern und Marken, um Ihnen gewisse Qualitätsstandards garantieren zu können.\n\nUnser Produktangebot umfasst Kompressionsstrümpfe, Bandagen, Prothesen, Pflegemittel, Nacht- und Unterwäsche, Alltagshilfen, Schuhe und vieles mehr.\n\nAber vor allem bekommen Sie professionelle und freundliche Beratung auf Augenhöhe – Ihr Anliegen liegt uns am Herzen und unsere kompetenten und gut ausgebildeten Mitarbeiter nehmen sich gerne Zeit für Sie.",
+  "categories": [
+    {
+      "title": "Kompressionsstrümpfe",
+      "items": [
+        "Lymphologische Versorgung (flachgestrickt)",
+        "Phlebologische Versorgung (rundgestrickt)",
+        "Maßanfertigungen",
+        "verschiedene Hersteller* und Qualitäten",
+        "Arten: Kniestrümpfe, Oberschenkelstrümpfe, Strumpfhosen, Armstrümpfe, Handschuhe, uvm.",
+        "Anziehhilfen, Ausziehhilfen, Pflegecreme für die Haut, Waschlotion für Kompressionsstrümpfe"
+      ]
+    },
+    {
+      "title": "Bandagen",
+      "items": [
+        "Hals",
+        "Schulter",
+        "Ellenbogen",
+        "Finger",
+        "Daumen",
+        "Hand",
+        "Leib",
+        "Rücken",
+        "Knie",
+        "Knöchel",
+        "Fuß"
+      ]
+    },
+    {
+      "title": "Brustprothesenversorgung",
+      "items": [
+        "Prothesen, Teilprothesen",
+        "Wäsche",
+        "Bademoden",
+        "ausführliche Beratung von qualifizierten Mitarbeitern"
+      ]
+    },
+    {
+      "title": "Pflegehilfsmittel",
+      "items": [
+        "Beantragung der Übernahme von Pflegehilfsmittel (40 Euro im Monat) bei den Krankenkassen im Falle einer Pflegestufe",
+        "Waschlotionen",
+        "Einmalhandschuhe",
+        "Desinfektionsmittel",
+        "Bettschutzauflagen",
+        "uvm."
+      ]
+    },
+    {
+      "title": "Inkontinenzversorgung",
+      "items": [
+        "Windeln",
+        "Vorlagen",
+        "Katheter",
+        "Beinbeutel",
+        "etc.",
+        "ausführliche Beratung von qualifizierten Mitarbeitern"
+      ]
+    },
+    {
+      "title": "Alltagshilfen",
+      "items": [
+        "Unterarmgehstützen",
+        "Gehstöcke",
+        "Trinkbecher",
+        "Flaschen- und Dosenöffner",
+        "Spezialbesteck und Spezialgeschirr",
+        "Greifzangen",
+        "Blutdruckmessgeräte",
+        "Tensgeräte",
+        "uvm."
+      ]
+    },
+    {
+      "title": "Schuhe",
+      "items": [
+        "Gesundheitsschuhe",
+        "Hausschuhe",
+        "Badeschuhe",
+        "Lieferanten: Berkemann, Fischer, Birkenstock, etc"
+      ]
+    },
+    {
+      "title": "Wärmeartikel und Wäsche",
+      "items": [
+        "Socken, Strümpfe, Strumpfhosen (auch für Diabetiker)",
+        "Heizkissen und Heizdecken",
+        "Angorawäsche, Gelenkwärmer"
+      ]
+    },
+    {
+      "title": "Fitness/Wellness",
+      "items": [
+        "Nordic-Walking-Stöcke und Zubehör",
+        "Therabänder",
+        "Faszientherapieprodukte",
+        "Gymnastikbälle- und matten",
+        "Schlafkissen (z.B Firma Tempur)",
+        "uvm."
+      ]
+    }
+  ],
+  "note": "*Hauptlieferant = Ganzoni Sigvaris, Dr. Ausbüttel, Julius Zorn"
+}

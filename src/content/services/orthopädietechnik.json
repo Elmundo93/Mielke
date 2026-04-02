@@ -1,0 +1,63 @@
+{
+  "slug": "orthopaedietechnik",
+  "title": "Orthopädietechnik",
+  "intro": "Maßgefertigte Orthopädietechnik und Prothesen.",
+  "benefits": [],
+  "heroImage": "/OrthopädietechnikServiceImage.jpg",
+  "content": "Gewinnen Sie mit Orthopädietechnik ein Stück Lebensqualität zurück.\n\nWir sehen die moderne Orthopädietechnik als Gewinn und möchten Ihnen, mit den heutigen Möglichkeiten ein Stück Lebensqualität zurückgeben.\n\nUnsere Leistungen umfassen von Orthetik über Prothetik bis hin zu Bandagistik und Silikon-Technik.\n\nUnsere Produkte entsprechen höchsten Standards und werden ausschließlich aus qualitativ hochwertigen Materialien und mit modernsten Technologien gefertigt – individuell und nach Maß mit fachlichem Wissen und Professionalität, verstehen wir unser Handwerk und freuen uns Ihnen mit Ihrem ganz persönlichen Anliegen weiterhelfen zu dürfen. Unsere freundlichen und geschulten Mitarbeiter helfen Ihnen gerne weiter und informieren Sie umfassend in einem persönlichen Gespräch.",
+  "categories": [
+    {
+      "title": "Prothesen aller Art",
+      "items": [
+        "Armprothesen",
+        "Beinprothesen",
+        "Teilprothesen",
+        "Kosmetische Prothesen",
+        "Sportprothesen",
+        "Maßanfertigungen"
+      ]
+    },
+    {
+      "title": "Orthesen",
+      "items": [
+        "Schulter",
+        "Ellenbogen",
+        "Finger",
+        "Daumen",
+        "Hand",
+        "Leib",
+        "Rücken",
+        "Knie",
+        "Knöchel",
+        "Fuß"
+      ]
+    },
+    {
+      "title": "Bandagen",
+      "items": [
+        "Hals",
+        "Schulter",
+        "Ellenbogen",
+        "Finger",
+        "Daumen",
+        "Hand",
+        "Leib",
+        "Rücken",
+        "Knie",
+        "Knöchel",
+        "Fuß"
+      ]
+    },
+    {
+      "title": "Spezialanfertigungen",
+      "items": [
+        "Leibbinden und Mieder nach Maß",
+        "Silikon-Technik",
+        "Individuelle Beratung",
+        "Maßanfertigungen",
+        "Anpassung und Nachsorge"
+      ]
+    }
+  ],
+  "note": "Alle Maßnahmen erfolgen in enger Zusammenarbeit mit Ärzten und Therapeuten."
+}

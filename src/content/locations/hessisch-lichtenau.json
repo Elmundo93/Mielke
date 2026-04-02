@@ -1,0 +1,24 @@
+{
+  "slug": "hessisch-lichtenau",
+  "name": "Hessisch Lichtenau",
+  "address": "Landgrafenstraße 7",
+  "postalCode": "37235",
+  "heroImage": "/HeliFront.jpg",
+  "city": "Hessisch Lichtenau",
+  "phone": "+49 5602 914772",
+  "email": "hessischLichtenau@example.de",
+  "lat": 51.3401,
+  "lon": 9.8552,
+  "openingHours": [
+    { "day": "Montag",     "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
+    { "day": "Dienstag",   "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
+    { "day": "Mittwoch",   "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
+    { "day": "Donnerstag", "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
+    { "day": "Freitag",    "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
+    { "day": "Samstag",    "opens": "09:00", "closes": "12:00" }
+  ],
+  "services": ["sanitaetshaus", "rehatechnik", "orthopaedietechnik", "orthopaedieschuhtechnik"],
+  "accessibility": ["Stufenloser Zugang", "Parkplätze vor Ort"],
+  "introText": "In unserer größten Filiale in Hessisch Lichtenau befindet sich auch die Orthopädieschuhmacherwerkstatt.",
+  "diashowImages": []
+}

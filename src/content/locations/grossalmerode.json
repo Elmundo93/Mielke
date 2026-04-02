@@ -1,0 +1,25 @@
+{
+                "slug": "grossalmerode",
+                "name": "Großalmerode",
+                "address": "Marktplatz 15",
+                "postalCode": "37247",
+                "heroImage": "/GroßalmerodeFront.jpg",
+                "city": "Großalmerode",
+                "phone": "+49 5604 6392",
+                "email": "großalmerode@example.de",
+                "lat": 51.3401,
+                "lon": 9.8552,
+                "openingHours": [
+                  { "day": "Montag", "opens": "09:00", "closes": "18:00" },
+                  { "day": "Dienstag", "opens": "09:00", "closes": "18:00" },
+                  { "day": "Mittwoch", "opens": "09:00", "closes": "18:00" },
+                  { "day": "Donnerstag", "opens": "09:00", "closes": "18:00" },
+                  { "day": "Freitag", "opens": "09:00", "closes": "16:00" }
+                ],
+                "services": ["sanitaetshaus","rehatechnik","orthopaedietechnik","orthopaedieschuhtechnik"],
+                "accessibility": ["Stufenloser Zugang", "Parkplätze vor Ort"],
+                "introText": "In der Filiale Großalmerode finden Sie neben dem Sanitätshaussortiment auch Nacht- und Unterwäsche.",
+                "diashowImages": []
+              }
+              
+              

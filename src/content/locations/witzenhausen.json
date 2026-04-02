@@ -1,0 +1,25 @@
+{
+  "slug": "witzenhausen",
+  "name": "Witzenhausen",
+  "address": "Ermschwerder Straße 23",
+  "postalCode": "37213",
+  "city": "Witzenhausen",
+  "heroImage": "/LadenWitzenhausen.jpg",
+  "phone": "+49 5542 910112",
+  "email": "witzenhausen@example.de",
+  "lat": 51.3401,
+  "lon": 9.8552,
+  "openingHours": [
+    { "day": "Montag", "opens": "08:00", "closes": "18:00" },
+    { "day": "Dienstag", "opens": "08:00", "closes": "18:00" },
+    { "day": "Mittwoch", "opens": "08:00", "closes": "18:00" },
+    { "day": "Donnerstag", "opens": "08:00", "closes": "18:00" },
+    { "day": "Freitag", "opens": "08:00", "closes": "16:00" },
+    { "day": "Samstag", "opens": "09:00", "closes": "12:00" }
+  ],
+  "services": ["sanitaetshaus","rehatechnik","orthopaedietechnik","orthopaedieschuhtechnik"],
+  "accessibility": ["Stufenloser Zugang", "Parkplätze vor Ort"],
+  "introText":"Orthopädiemechanikermeister Helmut Mielke, eröffnete im April 1989 das erste Sanitätshaus Mielke in Witzenhausen in der Ermschwerderstraße, unsere heutige Hauptfiliale. In Witzenhausen befindet sich neben dem Sanitätshausauch unsere die Orthopädie- und Rehawerkstatt.",
+  "diashowImages": []
+}
+

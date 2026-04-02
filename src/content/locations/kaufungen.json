@@ -1,0 +1,25 @@
+{
+                "slug": "kaufungen",
+                "name": "Kaufungen",
+                "address": "Leipziger Str. 277",
+                "postalCode": "34260",
+                "city": "Kaufungen",
+                "heroImage": "/KaufungenFront.jpg",
+                "phone": "+49 5605 9272700",
+                "email": "kaufungen@example.de",
+                "lat": 51.3401,
+                "lon": 9.8552,
+                "openingHours": [
+                  { "day": "Montag", "opens": "09:00", "closes": "13:00" },
+                  { "day": "Dienstag", "opens": "09:00", "closes": "18:00" },
+                  { "day": "Mittwoch", "opens": "09:00", "closes": "13:00" },
+                  { "day": "Donnerstag", "opens": "09:00", "closes": "18:00" },
+                  { "day": "Freitag", "opens": "09:00", "closes": "16:00" }
+                ],
+                "services": ["sanitaetshaus","rehatechnik","orthopaedietechnik","orthopaedieschuhtechnik"],
+                "accessibility": ["Stufenloser Zugang", "Parkplätze vor Ort"],
+                "introText": "Seit dem 18. Januar 2017 sind wir auch in Kaufungen für Sie da! In unserer Filiale in Niederkaufungen finden Sie unser gesamtes Sanitätshaussortiment und eine gut sortierte Wäscheabteilung.",
+                "diashowImages": []
+              }
+              
+              

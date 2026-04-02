@@ -1,0 +1,32 @@
+{
+  "title": "Über uns",
+  "hero": {
+    "headline": "Sanitätshaus MIELKE Ihr Spezialist für Orthopädietechnik – seit 1989!",
+    "intro": "Orthopädiemechanikermeister Helmut Mielke, eröffnete im April 1989 das erste Sanitätshaus Mielke in Witzenhausen in der Ermschwerderstraße, unsere heutige Hauptfiliale. Mittlerweile zählen wir vier weitere regionale Filialen zu unserem Unternehmen, die Sie in Bad Sooden-Allendorf, Großalmerode, Hessisch Lichtenau und Kaufungen finden."
+  },
+  "mainContent": {
+    "section1": "Spezialisiert auf Orthopädietechnik, Rehatechnik und Medizintechnik, stehen wir Ihnen nun seit drei Jahrzehnten, mit fachgerechter und kompetenter Beratung in unseren Sanitätshäusern zur Seite. In den vergangenen Jahren haben wir unser Leistungsangebot stetig ausgebaut, um dem wachsenden medizinischen Fortschritt und den Ansprüchen unserer Kunden gerecht zu werden.",
+    "section2": "Seit 2008 haben wir zu dem die Orthopädieschuhtechnik in unser Leistungsportfolio aufgenommen und fertigen seit her für Sie in der unternehmenseigenen Schuhtechnikwerkstatt, orthopädische Schuhe, Einlagen und Schuhreparaturen aller Art in Handarbeit und nach Maß.",
+    "section3": "Service, Freundlichkeit und die Zufriedenheit unserer Kunden stehen bei uns an oberster Stelle. Damit wir diesen Anspruch erfüllen können, beschäftigen wir an fünf Standorten in der Region, 14 qualifizierte Mitarbeiter, die Ihnen mit jahrelanger Erfahrung, Professionalität und vor allem fachlichem Know-How beratend zur Seite stehen."
+  },
+  "stats": [
+    {
+      "number": "1989",
+      "label": "Gründungsjahr"
+    },
+    {
+      "number": "35+",
+      "label": "Jahre Erfahrung"
+    },
+    {
+      "number": "5",
+      "label": "Standorte"
+    }
+  ],
+  "services": [
+    "Orthopädietechnik",
+    "Rehatechnik", 
+    "Medizintechnik",
+    "Orthopädieschuhtechnik"
+  ]
+}
