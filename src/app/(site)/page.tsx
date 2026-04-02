@@ -87,7 +87,7 @@ export default async function HomePage() {
                 <div className="text-lg text-gray-200">Jahre Erfahrung</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl md:text-5xl font-bold text-emerald-400 mb-2">5</div>
+                <div className="text-4xl md:text-5xl font-bold text-emerald-400 mb-2">4</div>
                 <div className="text-lg text-gray-200">Standorte</div>
               </div>
             

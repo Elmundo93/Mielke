@@ -36,11 +36,11 @@ export default async function ContactPage() {
     
       <Section title="Kontaktieren Sie uns!">
         <div className="text-center max-w-3xl mx-auto mb-12">
-        <p className="text-lg text-gray-700 dark:text-gray-300">
+        <p className="text-xl text-gray-700 dark:text-gray-300">
               Haben Sie Fragen zu unseren Leistungen oder möchten ein Rezept einsenden?
-              Füllen Sie einfach unser Kontaktformular aus.
+              Füllen Sie einfach unser Kontaktformular aus!
             </p>
-            <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button asChild size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xl font-semibold mt-6">
                 <Link href="/kontaktform">zum Kontaktformular</Link>
               </Button>
         

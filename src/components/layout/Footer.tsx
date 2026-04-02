@@ -14,7 +14,7 @@ export function Footer() {
               <strong className="text-emerald-600 dark:text-emerald-400">35+</strong> Jahre Erfahrung
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              <strong className="text-emerald-600 dark:text-emerald-400">5</strong> Standorte
+              <strong className="text-emerald-600 dark:text-emerald-400">4</strong> Standorte
             </div>
           </div>
         </div>
