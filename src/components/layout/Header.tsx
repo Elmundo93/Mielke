@@ -20,7 +20,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="text-lg font-semibold"><Image src="/Mielke_Logo_b.webp" alt="Sanitätshaus" width={300} height={300} /></Link>
+        <Link href="/" className="text-lg font-semibold"><Image src="/Mielke_Logo_b.webp" alt="Sanitätshaus" width={350} height={75} /></Link>
 
         {/* Desktop Navigation */}
         <NavigationMenu className="hidden md:flex">
