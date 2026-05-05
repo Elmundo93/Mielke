@@ -17,7 +17,7 @@
     { "day": "Freitag", "opens": "08:00", "closes": "16:00" },
     { "day": "Samstag", "opens": "09:00", "closes": "12:00" }
   ],
-  "services": ["sanitaetshaus","rehatechnik","orthopaedietechnik","orthopaedieschuhtechnik"],
+  "services": ["sanitätshaus","rehatechnik","orthopaedietechnik","orthopaedieschuhtechnik"],
   "accessibility": ["Stufenloser Zugang", "Parkplätze vor Ort"],
   "introText":"Orthopädiemechanikermeister Helmut Mielke, eröffnete im April 1989 das erste Sanitätshaus Mielke in Witzenhausen in der Ermschwerderstraße, unsere heutige Hauptfiliale. In Witzenhausen befindet sich neben dem Sanitätshausauch unsere die Orthopädie- und Rehawerkstatt.",
   "diashowImages": []

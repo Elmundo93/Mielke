@@ -22,6 +22,37 @@ const serviceKeywords: Record<string, string[]> = {
   orthopaedieschuhtechnik: ["Orthopädieschuhtechnik", "Einlagen", "Maßschuhe", "Fußorthopädie", "Diabetikerschuhe"]
 };
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function renderContentWithLinks(content: string, links?: Service["links"]) {
+  if (!links?.length) return content;
+
+  const validLinks = links.filter(link => link.label && link.url);
+  if (!validLinks.length) return content;
+
+  const labelToUrl = new Map(validLinks.map(link => [link.label, link.url]));
+  const pattern = new RegExp(`(${validLinks.map(link => escapeRegExp(link.label)).join("|")})`, "g");
+
+  return content.split(pattern).map((part, index) => {
+    const url = labelToUrl.get(part);
+    if (!url) return part;
+
+    return (
+      <a
+        key={`${part}-${index}`}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-inherit underline decoration-current/40 underline-offset-2 transition-colors hover:text-emerald-600 hover:decoration-emerald-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60 focus-visible:ring-offset-2 rounded-sm"
+      >
+        {part}
+      </a>
+    );
+  });
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const service = await getService(slug as Service["slug"]);
@@ -128,7 +159,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
         <Section title="Über diesen Service" subdued>
           <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
             <p className="text-xl leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line">
-              {s.content}
+              {renderContentWithLinks(s.content, s.links)}
             </p>
           </div>
         </Section>
@@ -227,7 +258,7 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
       <Section title="Beratung gewünscht?">
         <div className="text-center max-w-3xl mx-auto">
           <p className="text-xl text-gray-700 dark:text-gray-300 mb-8">
-            Haben Sie Fragen zu {s.title.toLowerCase()} oder benötigen Sie eine persönliche Beratung? 
+            Haben Sie Fragen {s.title === "Sanitätshaus" ? "zum" : "zur"} {s.title} oder benötigen Sie eine persönliche Beratung?
             Wir sind gerne für Sie da!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

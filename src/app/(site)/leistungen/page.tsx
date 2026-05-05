@@ -55,7 +55,7 @@ export default async function ServicesPage() {
               <div className="text-sm text-gray-600 dark:text-gray-400">Jahre Erfahrung</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">5</div>
+              <div className="text-3xl md:text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">4</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Standorte</div>
             </div>
           </div>
@@ -112,21 +112,7 @@ export default async function ServicesPage() {
             </CardContent>
           </Card>
 
-          <Card className="text-center hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <CardTitle className="text-xl">Moderne Technik</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 dark:text-gray-300">
-                Einsatz modernster Technologien und hochwertiger Materialien für optimale Ergebnisse.
-              </p>
-            </CardContent>
-          </Card>
+
         </div>
       </Section>
 
@@ -149,7 +135,7 @@ export default async function ServicesPage() {
             </div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Vermessung</h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
-              Präzise Vermessung und digitale Erfassung für optimale Passform
+              Präzise Vermessung und Erfassung für optimale Passform
             </p>
           </div>
           

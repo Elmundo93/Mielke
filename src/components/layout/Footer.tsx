@@ -7,7 +7,7 @@ export function Footer() {
         <div className="sm:col-span-2">
           <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">Sanitätshaus MIELKE</div>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-            Ihr Spezialist für Orthopädietechnik seit 1989. Individuelle Versorgung in fünf Standorten der Region.
+            Ihr Spezialist für Orthopädietechnik seit 1989. Individuelle Versorgung in vier Standorten der Region.
           </p>
           <div className="mt-4 flex items-center gap-4">
             <div className="text-sm text-gray-500 dark:text-gray-400">

@@ -144,7 +144,7 @@ export default async function HomePage() {
           <h2 className="text-3xl font-semibold text-center">Unsere Standorte</h2>
           <div className="mt-6"></div>
           <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-            An fünf Standorten in der Region sind wir für Sie da und mit unseren freundlichen und hilfsbereiten Mitarbeitern 
+            An vier Standorten in der Region sind wir für Sie da und mit unseren freundlichen und hilfsbereiten Mitarbeitern 
             stets bestrebt Ihre Anforderungen und Ansprüche zu Ihrer vollsten Zufriedenheit zu erfüllen.
           </p>
         </div>

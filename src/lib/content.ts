@@ -25,6 +25,10 @@ export type Service = {
   intro: string;
   benefits: string[];
   content?: string;
+  links?: {
+    label: string;
+    url: string;
+  }[];
   categories?: {
     title: string;
     items: string[];
