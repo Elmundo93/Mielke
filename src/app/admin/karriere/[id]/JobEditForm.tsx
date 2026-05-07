@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { saveJob, type JobFormData } from "@/lib/admin-actions";
 import type { Job } from "@/lib/content";
 
@@ -19,6 +20,7 @@ export default function JobEditForm({ job }: { job: Job }) {
   const [data, setData] = useState<JobFormData>({ ...job });
   const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   function setField<K extends keyof JobFormData>(key: K, value: JobFormData[K]) {
     setData((prev) => ({ ...prev, [key]: value }));
@@ -43,6 +45,7 @@ export default function JobEditForm({ job }: { job: Job }) {
     startTransition(async () => {
       const result = await saveJob(job.id, data);
       setStatus(result.ok ? "saved" : "error");
+      if (result.ok) router.refresh();
     });
   }
 

@@ -54,7 +54,7 @@ async function readFromBlob<T>(relPath: string, defaults: T): Promise<T> {
   const pathname = contentPath(relPath);
 
   try {
-    const result = await get(pathname, { access: "private", token: BLOB_TOKEN });
+    const result = await get(pathname, { access: "private", token: BLOB_TOKEN, useCache: false });
 
     if (!result || result.statusCode !== 200 || !result.stream) {
       if (shouldFallbackToFilesystem()) return readFromFilesystem(relPath, defaults);
@@ -107,7 +107,7 @@ async function readDirFromBlob(relDir: string): Promise<ContentDirEntry[]> {
 
     return Promise.all(
       jsonBlobs.map(async (b) => {
-        const result = await get(b.pathname, { access: "private", token: BLOB_TOKEN });
+        const result = await get(b.pathname, { access: "private", token: BLOB_TOKEN, useCache: false });
         if (!result || result.statusCode !== 200 || !result.stream) {
           throw new Error(`[storage] Blob nicht lesbar: ${b.pathname}`);
         }

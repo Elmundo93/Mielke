@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { saveLocation, type LocationFormData } from "@/lib/admin-actions";
 import type { Location } from "@/lib/content";
 
@@ -55,6 +56,7 @@ export default function LocationEditForm({
   );
   const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   function setField<K extends keyof LocationFormData>(
     key: K,
@@ -124,6 +126,7 @@ export default function LocationEditForm({
     startTransition(async () => {
       const result = await saveLocation(slug, data);
       setStatus(result.ok ? "saved" : "error");
+      if (result.ok) router.refresh();
     });
   }
 
