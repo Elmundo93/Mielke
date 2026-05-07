@@ -1,23 +1,70 @@
 import { NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "crypto";
+import {
+  createAdminSessionToken,
+  isValidAdminPassword,
+  SESSION_COOKIE,
+} from "@/lib/admin-auth";
 
-function isValidPassword(input: string): boolean {
-  const expected = process.env.KEYSTATIC_ADMIN_PASSWORD ?? "";
-  if (!expected) return false;
+// In-memory rate limiting: best-effort, resets on cold start.
+// Sufficient for a low-traffic admin endpoint without external dependencies.
+type Entry = { attempts: number; windowStart: number; lockedUntil?: number };
+const attempts = new Map<string, Entry>();
 
-  const secret = process.env.KEYSTATIC_SECRET ?? "fallback";
-  const hmac = (s: string) =>
-    createHmac("sha256", secret).update(s).digest();
+const WINDOW_MS = 5 * 60 * 1000;   // 5-Minuten-Fenster
+const MAX_ATTEMPTS = 5;             // max. Versuche pro Fenster
+const LOCKOUT_MS = 15 * 60 * 1000; // 15 Minuten Sperre
 
-  return timingSafeEqual(hmac(input), hmac(expected));
+function getIp(req: Request): string {
+  return (
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    req.headers.get("x-real-ip") ??
+    "unknown"
+  );
 }
 
-function createSessionToken(password: string): string {
-  const secret = process.env.KEYSTATIC_SECRET ?? "fallback";
-  return createHmac("sha256", secret).update(password).digest("hex");
+function checkLimit(ip: string): { allowed: boolean; retryAfter?: number } {
+  const now = Date.now();
+  const entry = attempts.get(ip);
+
+  if (entry?.lockedUntil && entry.lockedUntil > now) {
+    return { allowed: false, retryAfter: Math.ceil((entry.lockedUntil - now) / 1000) };
+  }
+
+  if (!entry || now - entry.windowStart > WINDOW_MS) {
+    attempts.set(ip, { attempts: 0, windowStart: now });
+  }
+
+  return { allowed: true };
+}
+
+function recordFailure(ip: string): void {
+  const now = Date.now();
+  const entry = attempts.get(ip) ?? { attempts: 0, windowStart: now };
+  entry.attempts += 1;
+  if (entry.attempts >= MAX_ATTEMPTS) {
+    entry.lockedUntil = now + LOCKOUT_MS;
+  }
+  attempts.set(ip, entry);
+}
+
+function clearAttempts(ip: string): void {
+  attempts.delete(ip);
 }
 
 export async function POST(req: Request) {
+  const ip = getIp(req);
+  const limit = checkLimit(ip);
+
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "too_many_attempts" },
+      {
+        status: 429,
+        headers: { "Retry-After": String(limit.retryAfter ?? 900) },
+      }
+    );
+  }
+
   let body: { password?: string };
   try {
     body = await req.json();
@@ -25,20 +72,27 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
 
-  if (!isValidPassword(body.password ?? "")) {
-    await new Promise((r) => setTimeout(r, 400));
-    return NextResponse.json({ ok: false }, { status: 401 });
+  try {
+    if (!isValidAdminPassword(body.password ?? "")) {
+      recordFailure(ip);
+      await new Promise((r) => setTimeout(r, 400));
+      return NextResponse.json({ ok: false }, { status: 401 });
+    }
+
+    clearAttempts(ip);
+    const token = createAdminSessionToken(process.env.KEYSTATIC_ADMIN_PASSWORD ?? "");
+
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set(SESSION_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 8,
+      path: "/",
+    });
+    return response;
+  } catch (err) {
+    console.error("admin-login error:", err);
+    return NextResponse.json({ ok: false }, { status: 500 });
   }
-
-  const token = createSessionToken(process.env.KEYSTATIC_ADMIN_PASSWORD ?? "");
-
-  const response = NextResponse.json({ ok: true });
-  response.cookies.set("ks_session", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 8,
-    path: "/",
-  });
-  return response;
 }

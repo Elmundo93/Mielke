@@ -7,15 +7,16 @@ import { Suspense } from "react";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/admin";
+  const rawRedirect = searchParams.get("redirect") ?? "/admin";
+  const redirect = rawRedirect.startsWith("/admin") ? rawRedirect : "/admin";
 
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<"wrong" | "locked" | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setError(false);
+    setError(null);
 
     startTransition(async () => {
       const res = await fetch("/api/admin-login", {
@@ -26,8 +27,11 @@ function LoginForm() {
 
       if (res.ok) {
         router.push(redirect);
+      } else if (res.status === 429) {
+        setError("locked");
+        setPassword("");
       } else {
-        setError(true);
+        setError("wrong");
         setPassword("");
       }
     });
@@ -85,21 +89,15 @@ function LoginForm() {
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 flex items-center gap-1.5">
-              <svg
-                className="w-4 h-4 shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
+            <p className="text-sm text-red-600 flex items-center gap-1.5" role="alert">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
                 />
               </svg>
-              Falsches Passwort
+              {error === "locked"
+                ? "Zu viele Fehlversuche. Bitte 15 Minuten warten."
+                : "Falsches Passwort"}
             </p>
           )}
 

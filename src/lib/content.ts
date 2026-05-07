@@ -1,5 +1,4 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import { readContentDirEntries, readContentFile } from "@/lib/storage";
 
 export type Location = {
   slug: string;
@@ -9,7 +8,7 @@ export type Location = {
   city: string;
   phone?: string;
   email?: string;
-  lat?: number; 
+  lat?: number;
   lon?: number;
   openingHours?: { day: string; opens: string; closes: string; pause?: { from: string; to: string } }[];
   services: string[];
@@ -71,34 +70,26 @@ export type AboutUsContent = {
   services: string[];
 };
 
-const CONTENT_DIR = path.join(process.cwd(), "src", "content");
-
-/** In Listen zuerst; übrige Standorte alphabetisch nach Anzeigename. */
 const PRIMARY_LOCATION_SLUG = "witzenhausen";
+
+const EMPTY_LOCATION: Location = {
+  slug: "",
+  name: "",
+  address: "",
+  postalCode: "",
+  city: "",
+  services: [],
+};
 
 export async function getAllLocations(): Promise<Location[]> {
   try {
-    const dir = path.join(CONTENT_DIR, "locations");
-    const files = await fs.readdir(dir);
-    const items = await Promise.all(
-      files
-        .filter(f => f.endsWith(".json"))
-        .map(async (f) => {
-          try {
-            const raw = await fs.readFile(path.join(dir, f), "utf8");
-            // Slug wird aus dem Dateinamen abgeleitet – unabhängig vom JSON-Inhalt.
-            // Das ist wichtig, damit Keystatic den slug-Eintrag nicht im JSON
-            // speichern muss und trotzdem alles korrekt funktioniert.
-            const slug = f.replace(/\.json$/, "");
-            return { ...JSON.parse(raw), slug } as Location;
-          } catch (err) {
-            console.error(`Error reading location file ${f}:`, err);
-            return null;
-          }
-        })
-    );
-    const filtered = items.filter((item): item is Location => item !== null);
-    return filtered.sort((a, b) => {
+    const entries = await readContentDirEntries("locations");
+    const items = entries.map((entry) => {
+      const slug = entry.filename.replace(/\.json$/, "");
+      return { ...JSON.parse(entry.content), slug } as Location;
+    });
+
+    return items.sort((a, b) => {
       if (a.slug === PRIMARY_LOCATION_SLUG) return -1;
       if (b.slug === PRIMARY_LOCATION_SLUG) return 1;
       return a.name.localeCompare(b.name, "de");
@@ -111,33 +102,23 @@ export async function getAllLocations(): Promise<Location[]> {
 
 export async function getLocation(slug: string): Promise<Location | null> {
   try {
-    const p = path.join(CONTENT_DIR, "locations", `${slug}.json`);
-    const raw = await fs.readFile(p, "utf8");
-    return { ...JSON.parse(raw), slug } as Location;
-  } catch {
+    const location = await readContentFile<Location>(`locations/${slug}.json`, {
+      ...EMPTY_LOCATION,
+      slug,
+    });
+    return location.name ? { ...location, slug } : null;
+  } catch (err) {
+    console.error(`Error loading location ${slug}:`, err);
     return null;
   }
 }
 
-// Für Services im MVP: als JSON oder MDX hier zeigen wir JSON-Variante:
 export async function getAllServices(): Promise<Service[]> {
   try {
-    const dir = path.join(CONTENT_DIR, "services");
-    const files = await fs.readdir(dir);
-    const items = await Promise.all(
-      files
-        .filter(f => f.endsWith(".json"))
-        .map(async (f) => {
-          try {
-            const raw = await fs.readFile(path.join(dir, f), "utf8");
-            return JSON.parse(raw) as Service;
-          } catch (err) {
-            console.error(`Error reading service file ${f}:`, err);
-            return null;
-          }
-        })
-    );
-    return items.filter((item): item is Service => item !== null).sort((a, b) => a.title.localeCompare(b.title));
+    const entries = await readContentDirEntries("services");
+    return entries
+      .map((entry) => JSON.parse(entry.content) as Service)
+      .sort((a, b) => a.title.localeCompare(b.title, "de"));
   } catch (err) {
     console.error("Error loading services:", err);
     return [];
@@ -145,15 +126,13 @@ export async function getAllServices(): Promise<Service[]> {
 }
 
 export async function getService(slug: Service["slug"]): Promise<Service | null> {
-  const all = await getAllServices();
-  return all.find(s => s.slug === slug) ?? null;
+  const service = await readContentFile<Service | null>(`services/${slug}.json`, null);
+  return service;
 }
 
 export async function getJobs(): Promise<Job[]> {
   try {
-    const p = path.join(CONTENT_DIR, "karriere", "jobs.json");
-    const raw = await fs.readFile(p, "utf8");
-    return JSON.parse(raw) as Job[];
+    return await readContentFile<Job[]>("karriere/jobs.json", []);
   } catch (err) {
     console.error("Error loading jobs:", err);
     return [];
@@ -162,15 +141,11 @@ export async function getJobs(): Promise<Job[]> {
 
 export async function getAboutUsContent(): Promise<AboutUsContent | null> {
   try {
-    const dir = path.join(CONTENT_DIR, "about-us");
-    const files = await fs.readdir(dir);
-    const items = await Promise.all(files.filter(f => f.endsWith(".json")).map(async (f) => {
-      const raw = await fs.readFile(path.join(dir, f), "utf8");
-      return JSON.parse(raw) as AboutUsContent;
-    }));
-    return items[0];
-  } catch {
+    const entries = await readContentDirEntries("about-us");
+    const first = entries[0];
+    return first ? (JSON.parse(first.content) as AboutUsContent) : null;
+  } catch (err) {
+    console.error("Error loading about-us content:", err);
     return null;
   }
 }
-

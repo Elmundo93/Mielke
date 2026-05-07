@@ -1,4 +1,3 @@
-import { getAllLocations } from "@/lib/content";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { Metadata } from "next";
 
@@ -8,9 +7,7 @@ export const metadata: Metadata = {
     "Kontaktformular zu Sanitätshaus Mielke – Rezept einsenden, Termin vereinbaren oder allgemeine Anfragen stellen.",
 };
 
-export default async function ContactFormPage() {
-  const locations = await getAllLocations();
-
+export default function ContactFormPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12 px-4">
       <div className="max-w-3xl mx-auto">
@@ -21,7 +18,7 @@ export default async function ContactFormPage() {
             Rezept einsenden, Termin anfragen oder Hilfsmittel bestellen – schnell und einfach online.
           </p>
         </div>
-        <ContactForm locations={locations} />
+        <ContactForm />
       </div>
     </div>
   );

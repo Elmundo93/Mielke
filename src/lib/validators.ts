@@ -25,8 +25,8 @@ export const ContactSchema = z.object({
   versichertenart: z.string().optional(),
   versicherungsnummer: z.string().optional(),
 
-  // Standort & Nachricht
-  standort: z.string().min(1),
+  // Nachricht
+  standort: z.string().optional(),
   message: z.string().optional(),
 }).refine(
   (d) => (d.email && d.email.length > 0) || (d.telefon && d.telefon.length >= 6),

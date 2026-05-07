@@ -3,7 +3,6 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import type { Location } from "@/lib/content";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
 
@@ -28,7 +27,6 @@ interface FormData {
   versicherungsnummer: string;
   rezeptFiles: File[];
   // Step 4
-  standort: string;
   nachricht: string;
   datenschutz: boolean;
 }
@@ -95,36 +93,49 @@ const ANLIEGEN_OPTIONS = [
 
 const VERSICHERTENARTEN = ["Mitglied", "Familienversicherter", "Rentner"];
 
+const NACHRICHT_PLACEHOLDER: Record<string, string> = {
+  rezept: "z.B. Ich möchte ein Kassenrezept für … einreichen. Bitte teilen Sie mir mit, wie ich es zusenden kann.",
+  hilfsmittel: "z.B. Ich benötige eine Versorgung mit … und würde gerne wissen, welche Möglichkeiten es gibt.",
+  termin: "z.B. Ich wünsche einen Termin zur Beratung über … am liebsten vormittags.",
+  reparatur: "z.B. Mein Rollator hat ein defektes … – ich bitte um Abholung oder Terminvereinbarung.",
+  allgemein: "Beschreiben Sie Ihr Anliegen – wir melden uns schnellstmöglich bei Ihnen.",
+};
+
 // ─── Hilfs-Komponenten ────────────────────────────────────────────────────────
 
 function FieldLabel({ htmlFor, children, required }: { htmlFor: string; children: React.ReactNode; required?: boolean }) {
   return (
     <label htmlFor={htmlFor} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
       {children}
-      {required && <span className="text-emerald-600 ml-1">*</span>}
+      {required && <span className="text-emerald-600 ml-1" aria-hidden="true">*</span>}
     </label>
   );
 }
 
 function StepIndicator({ current, total, labels }: { current: Step; total: number; labels: string[] }) {
   return (
-    <div className="mb-8">
-      {/* Progress bar */}
-      <div className="relative h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mb-6">
+    <div className="mb-8" role="list" aria-label="Fortschritt">
+      <div className="relative h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full mb-6" aria-hidden="true">
         <div
           className="absolute h-full bg-emerald-600 rounded-full transition-all duration-500"
           style={{ width: `${((current - 1) / (total - 1)) * 100}%` }}
         />
       </div>
-      {/* Step dots */}
       <div className="flex justify-between">
         {labels.map((label, i) => {
           const stepNum = (i + 1) as Step;
           const isDone = stepNum < current;
           const isActive = stepNum === current;
           return (
-            <div key={i} className="flex flex-col items-center gap-1.5" style={{ width: `${100 / total}%` }}>
+            <div
+              key={i}
+              role="listitem"
+              aria-current={isActive ? "step" : undefined}
+              className="flex flex-col items-center gap-1.5"
+              style={{ width: `${100 / total}%` }}
+            >
               <div
+                aria-hidden="true"
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 ${
                   isDone
                     ? "bg-emerald-600 text-white"
@@ -134,7 +145,7 @@ function StepIndicator({ current, total, labels }: { current: Step; total: numbe
                 }`}
               >
                 {isDone ? (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
@@ -154,7 +165,7 @@ function StepIndicator({ current, total, labels }: { current: Step; total: numbe
 
 // ─── Haupt-Komponente ─────────────────────────────────────────────────────────
 
-export function ContactForm({ locations }: { locations: Location[] }) {
+export function ContactForm() {
   const [step, setStep] = useState<Step>(1);
   const [ok, setOk] = useState<boolean | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -177,7 +188,6 @@ export function ContactForm({ locations }: { locations: Location[] }) {
     versichertenart: "",
     versicherungsnummer: "",
     rezeptFiles: [],
-    standort: "",
     nachricht: "",
     datenschutz: false,
   });
@@ -188,9 +198,8 @@ export function ContactForm({ locations }: { locations: Location[] }) {
   const selectedAnliegen = ANLIEGEN_OPTIONS.find((a) => a.id === data.anliegen);
   const needsInsurance = selectedAnliegen?.needsInsurance ?? false;
 
-  // Gesamtschritte: 4 wenn Versicherung nötig, sonst 3 (Schritt 3 überspringen)
   const totalSteps = 4;
-  const stepLabels = ["Anliegen", "Ihre Daten", "Versicherung", "Abschluss"];
+  const stepLabels = ["Anliegen", "Ihre Daten", "Versicherung", "Nachricht"];
 
   const canAdvanceStep1 = data.anliegen !== "";
   const canAdvanceStep2 =
@@ -226,7 +235,7 @@ export function ContactForm({ locations }: { locations: Location[] }) {
   };
 
   const handleSubmit = async () => {
-    if (!data.datenschutz || !data.standort) return;
+    if (!data.datenschutz) return;
     setIsSubmitting(true);
 
     const formData = new globalThis.FormData();
@@ -246,7 +255,6 @@ export function ContactForm({ locations }: { locations: Location[] }) {
     formData.append("krankenkasse", data.krankenkasse);
     formData.append("versichertenart", data.versichertenart);
     formData.append("versicherungsnummer", data.versicherungsnummer);
-    formData.append("standort", data.standort);
     formData.append("message", data.nachricht);
     data.rezeptFiles.forEach((f) => formData.append("rezept", f));
 
@@ -265,7 +273,7 @@ export function ContactForm({ locations }: { locations: Location[] }) {
     return (
       <div className="text-center py-16 px-8">
         <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg className="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-10 h-10 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
@@ -296,26 +304,28 @@ export function ContactForm({ locations }: { locations: Location[] }) {
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Was ist Ihr Anliegen?</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Bitte wählen Sie den passenden Grund für Ihre Kontaktaufnahme.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" role="radiogroup" aria-label="Anliegen auswählen">
               {ANLIEGEN_OPTIONS.map((option) => (
                 <button
                   key={option.id}
                   type="button"
+                  role="radio"
+                  aria-checked={data.anliegen === option.id}
                   onClick={() => set("anliegen", option.id)}
-                  className={`relative text-left p-4 rounded-xl border-2 transition-all duration-200 group ${
+                  className={`relative text-left p-4 rounded-xl border-2 transition-all duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     data.anliegen === option.id
                       ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20"
                       : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                 >
                   {data.anliegen === option.id && (
-                    <div className="absolute top-3 right-3 w-5 h-5 bg-emerald-600 rounded-full flex items-center justify-center">
+                    <div className="absolute top-3 right-3 w-5 h-5 bg-emerald-600 rounded-full flex items-center justify-center" aria-hidden="true">
                       <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                   )}
-                  <div className={`mb-2 transition-colors ${data.anliegen === option.id ? "text-emerald-600" : "text-gray-400 group-hover:text-emerald-500"}`}>
+                  <div className={`mb-2 transition-colors ${data.anliegen === option.id ? "text-emerald-600" : "text-gray-400 group-hover:text-emerald-500"}`} aria-hidden="true">
                     {option.icon}
                   </div>
                   <div className={`font-semibold text-sm ${data.anliegen === option.id ? "text-emerald-700 dark:text-emerald-400" : "text-gray-900 dark:text-white"}`}>
@@ -332,19 +342,20 @@ export function ContactForm({ locations }: { locations: Location[] }) {
         {step === 2 && (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Ihre persönlichen Daten</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Pflichtfelder sind mit <span className="text-emerald-600">*</span> markiert.</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Pflichtfelder sind mit <span className="text-emerald-600" aria-label="Pflichtfeld">*</span> markiert.</p>
 
             <div className="space-y-4">
-              {/* Anrede */}
               <div>
                 <FieldLabel htmlFor="anrede">Anrede</FieldLabel>
-                <div className="flex gap-2">
+                <div className="flex gap-2" role="radiogroup" aria-label="Anrede">
                   {["Herr", "Frau", "Divers"].map((a) => (
                     <button
                       key={a}
                       type="button"
+                      role="radio"
+                      aria-checked={data.anrede === a}
                       onClick={() => set("anrede", a)}
-                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                         data.anrede === a
                           ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400"
                           : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-emerald-400"
@@ -356,57 +367,57 @@ export function ContactForm({ locations }: { locations: Location[] }) {
                 </div>
               </div>
 
-              {/* Name */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <FieldLabel htmlFor="vorname" required>Vorname</FieldLabel>
                   <Input id="vorname" value={data.vorname} onChange={(e) => set("vorname", e.target.value)}
-                    placeholder="Max" className="focus:ring-emerald-500 focus:border-emerald-500" />
+                    placeholder="Max" autoComplete="given-name" className="focus:ring-emerald-500 focus:border-emerald-500" />
                 </div>
                 <div>
                   <FieldLabel htmlFor="nachname" required>Nachname</FieldLabel>
                   <Input id="nachname" value={data.nachname} onChange={(e) => set("nachname", e.target.value)}
-                    placeholder="Mustermann" className="focus:ring-emerald-500 focus:border-emerald-500" />
+                    placeholder="Mustermann" autoComplete="family-name" className="focus:ring-emerald-500 focus:border-emerald-500" />
                 </div>
               </div>
 
-              {/* Geburtsdatum */}
               <div>
                 <FieldLabel htmlFor="geburtsdatum">Geburtsdatum</FieldLabel>
                 <Input id="geburtsdatum" type="date" value={data.geburtsdatum} onChange={(e) => set("geburtsdatum", e.target.value)}
-                  className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" />
+                  autoComplete="bday" className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" />
               </div>
 
-              {/* Adresse */}
               <div>
                 <FieldLabel htmlFor="strasse">Straße & Hausnummer</FieldLabel>
                 <Input id="strasse" value={data.strasse} onChange={(e) => set("strasse", e.target.value)}
-                  placeholder="Musterstraße 1" className="focus:ring-emerald-500 focus:border-emerald-500" />
+                  placeholder="Musterstraße 1" autoComplete="street-address" className="focus:ring-emerald-500 focus:border-emerald-500" />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 <div>
                   <FieldLabel htmlFor="plz">PLZ</FieldLabel>
                   <Input id="plz" value={data.plz} onChange={(e) => set("plz", e.target.value)}
-                    placeholder="37213" maxLength={5} className="focus:ring-emerald-500 focus:border-emerald-500" />
+                    placeholder="37213" maxLength={5} autoComplete="postal-code" className="focus:ring-emerald-500 focus:border-emerald-500" />
                 </div>
                 <div className="col-span-1 sm:col-span-2">
                   <FieldLabel htmlFor="ort">Ort</FieldLabel>
                   <Input id="ort" value={data.ort} onChange={(e) => set("ort", e.target.value)}
-                    placeholder="Witzenhausen" className="focus:ring-emerald-500 focus:border-emerald-500" />
+                    placeholder="Witzenhausen" autoComplete="address-level2" className="focus:ring-emerald-500 focus:border-emerald-500" />
                 </div>
               </div>
 
-              {/* Kontakt */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <FieldLabel htmlFor="email" required={!data.telefon}>E-Mail-Adresse {!data.telefon && <span className="text-xs text-gray-400 font-normal">(oder Telefon)</span>}</FieldLabel>
+                  <FieldLabel htmlFor="email" required={!data.telefon}>
+                    E-Mail-Adresse {!data.telefon && <span className="text-xs text-gray-400 font-normal">(oder Telefon)</span>}
+                  </FieldLabel>
                   <Input id="email" type="email" value={data.email} onChange={(e) => set("email", e.target.value)}
-                    placeholder="max@beispiel.de" className="focus:ring-emerald-500 focus:border-emerald-500" />
+                    placeholder="max@beispiel.de" autoComplete="email" className="focus:ring-emerald-500 focus:border-emerald-500" />
                 </div>
                 <div>
-                  <FieldLabel htmlFor="telefon" required={!data.email}>Telefonnummer {!data.email && <span className="text-xs text-gray-400 font-normal">(oder E-Mail)</span>}</FieldLabel>
+                  <FieldLabel htmlFor="telefon" required={!data.email}>
+                    Telefonnummer {!data.email && <span className="text-xs text-gray-400 font-normal">(oder E-Mail)</span>}
+                  </FieldLabel>
                   <Input id="telefon" type="tel" value={data.telefon} onChange={(e) => set("telefon", e.target.value)}
-                    placeholder="+49 5542 123456" className="focus:ring-emerald-500 focus:border-emerald-500" />
+                    placeholder="+49 5542 123456" autoComplete="tel" className="focus:ring-emerald-500 focus:border-emerald-500" />
                 </div>
               </div>
             </div>
@@ -422,23 +433,23 @@ export function ContactForm({ locations }: { locations: Location[] }) {
             </p>
 
             <div className="space-y-4">
-              {/* Krankenkasse */}
               <div>
                 <FieldLabel htmlFor="krankenkasse">Krankenkasse</FieldLabel>
                 <Input id="krankenkasse" value={data.krankenkasse} onChange={(e) => set("krankenkasse", e.target.value)}
                   placeholder="z.B. AOK, TK, Barmer ..." className="focus:ring-emerald-500 focus:border-emerald-500" />
               </div>
 
-              {/* Versichertenart */}
               <div>
                 <FieldLabel htmlFor="versichertenart">Versichertenart</FieldLabel>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Versichertenart">
                   {VERSICHERTENARTEN.map((v) => (
                     <button
                       key={v}
                       type="button"
+                      role="radio"
+                      aria-checked={data.versichertenart === v}
                       onClick={() => set("versichertenart", v)}
-                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                      className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                         data.versichertenart === v
                           ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400"
                           : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-emerald-400"
@@ -450,14 +461,12 @@ export function ContactForm({ locations }: { locations: Location[] }) {
                 </div>
               </div>
 
-              {/* Versicherungsnummer */}
               <div>
                 <FieldLabel htmlFor="versicherungsnummer">Versicherungsnummer</FieldLabel>
                 <Input id="versicherungsnummer" value={data.versicherungsnummer} onChange={(e) => set("versicherungsnummer", e.target.value)}
                   placeholder="A123456789" className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" />
               </div>
 
-              {/* Datei-Upload */}
               <div>
                 <FieldLabel htmlFor="rezept-upload">Rezept / Dokumente hochladen</FieldLabel>
                 <div
@@ -465,7 +474,11 @@ export function ContactForm({ locations }: { locations: Location[] }) {
                   onDragLeave={() => setDragOver(false)}
                   onDrop={(e) => { e.preventDefault(); setDragOver(false); addFiles(e.dataTransfer.files); }}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all ${
+                  role="button"
+                  tabIndex={0}
+                  aria-label="Dateien hochladen"
+                  onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
+                  className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                     dragOver
                       ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20"
                       : "border-gray-300 dark:border-gray-600 hover:border-emerald-400 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -481,7 +494,7 @@ export function ContactForm({ locations }: { locations: Location[] }) {
                     onChange={(e) => e.target.files && addFiles(e.target.files)}
                   />
                   <div className="flex flex-col items-center gap-2">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center" aria-hidden="true">
                       <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                       </svg>
@@ -490,24 +503,28 @@ export function ContactForm({ locations }: { locations: Location[] }) {
                       <span className="text-emerald-600 font-medium">Dateien auswählen</span>
                       <span className="text-gray-500 dark:text-gray-400"> oder hierher ziehen</span>
                     </div>
-                    <p className="text-xs text-gray-400">PDF, JPG, PNG, HEIC bis 10 MB • max. 5 Dateien</p>
+                    <p className="text-xs text-gray-400">PDF, JPG, PNG, HEIC bis 10 MB · max. 5 Dateien</p>
                   </div>
                 </div>
 
-                {/* Hochgeladene Dateien */}
                 {data.rezeptFiles.length > 0 && (
-                  <ul className="mt-3 space-y-2">
+                  <ul className="mt-3 space-y-2" aria-label="Hochgeladene Dateien">
                     {data.rezeptFiles.map((file, i) => (
                       <li key={i} className="flex items-center justify-between gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="flex items-center gap-2 min-w-0">
-                          <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                           </svg>
                           <span className="text-sm text-gray-700 dark:text-gray-300 truncate">{file.name}</span>
                           <span className="text-xs text-gray-400 shrink-0">({(file.size / 1024).toFixed(0)} KB)</span>
                         </div>
-                        <button type="button" onClick={() => removeFile(i)} className="text-gray-400 hover:text-red-500 transition-colors shrink-0">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          aria-label={`${file.name} entfernen`}
+                          className="text-gray-400 hover:text-red-500 transition-colors shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400 rounded"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
@@ -520,64 +537,36 @@ export function ContactForm({ locations }: { locations: Location[] }) {
           </div>
         )}
 
-        {/* ── Schritt 4: Standort & Abschluss ── */}
+        {/* ── Schritt 4: Nachricht & Abschluss ── */}
         {step === 4 && (
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Standort & Nachricht</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">Wählen Sie Ihren gewünschten Standort und hinterlassen Sie uns eine Nachricht.</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Ihre Nachricht</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              Beschreiben Sie Ihr Anliegen in eigenen Worten – je mehr Details, desto gezielter können wir helfen.
+            </p>
 
             <div className="space-y-5">
-              {/* Standort-Auswahl */}
+              {/* Nachrichtenfeld */}
               <div>
-                <FieldLabel htmlFor="standort" required>Gewünschter Standort</FieldLabel>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {locations.map((loc) => (
-                    <button
-                      key={loc.slug}
-                      type="button"
-                      onClick={() => set("standort", loc.slug)}
-                      className={`text-left p-4 rounded-xl border-2 transition-all ${
-                        data.standort === loc.slug
-                          ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20"
-                          : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-700"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <div className={`font-semibold text-sm ${data.standort === loc.slug ? "text-emerald-700 dark:text-emerald-400" : "text-gray-900 dark:text-white"}`}>
-                            {loc.name}
-                          </div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {loc.address}, {loc.postalCode} {loc.city}
-                          </div>
-                          {loc.phone && (
-                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{loc.phone}</div>
-                          )}
-                        </div>
-                        {data.standort === loc.slug && (
-                          <div className="w-5 h-5 bg-emerald-600 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  ))}
+                <FieldLabel htmlFor="nachricht">Nachricht</FieldLabel>
+                <div className="relative">
+                  <textarea
+                    id="nachricht"
+                    rows={9}
+                    value={data.nachricht}
+                    onChange={(e) => set("nachricht", e.target.value)}
+                    placeholder={NACHRICHT_PLACEHOLDER[data.anliegen] ?? "Beschreiben Sie Ihr Anliegen …"}
+                    aria-describedby="nachricht-hint"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-white text-sm leading-relaxed resize-none"
+                  />
+                  <span
+                    id="nachricht-hint"
+                    className="absolute bottom-3 right-3 text-xs text-gray-300 dark:text-gray-600 select-none pointer-events-none"
+                    aria-live="polite"
+                  >
+                    {data.nachricht.length > 0 ? `${data.nachricht.length} Zeichen` : "optional"}
+                  </span>
                 </div>
-              </div>
-
-              {/* Nachricht */}
-              <div>
-                <FieldLabel htmlFor="nachricht">Ihre Nachricht</FieldLabel>
-                <textarea
-                  id="nachricht"
-                  rows={4}
-                  value={data.nachricht}
-                  onChange={(e) => set("nachricht", e.target.value)}
-                  placeholder="Beschreiben Sie Ihr Anliegen genauer (optional) ..."
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-gray-800 dark:text-white text-sm"
-                />
               </div>
 
               {/* Datenschutz */}
@@ -591,15 +580,18 @@ export function ContactForm({ locations }: { locations: Location[] }) {
                 />
                 <label htmlFor="datenschutz" className="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">
                   Ich habe die{" "}
-                  <a href="/datenschutz" className="text-emerald-600 hover:underline">Datenschutzerklärung</a>{" "}
-                  gelesen und bin damit einverstanden, dass meine Daten zur Bearbeitung dieser Anfrage verwendet werden. <span className="text-emerald-600">*</span>
+                  <a href="/datenschutz" className="text-emerald-600 hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500 rounded">
+                    Datenschutzerklärung
+                  </a>{" "}
+                  gelesen und bin damit einverstanden, dass meine Daten zur Bearbeitung dieser Anfrage verwendet werden.{" "}
+                  <span className="text-emerald-600" aria-label="Pflichtfeld">*</span>
                 </label>
               </div>
 
               {/* Fehler-Hinweis */}
               {ok === false && (
-                <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl">
-                  <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center shrink-0">
+                <div role="alert" className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-xl">
+                  <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center shrink-0" aria-hidden="true">
                     <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -620,9 +612,9 @@ export function ContactForm({ locations }: { locations: Location[] }) {
             <button
               type="button"
               onClick={prevStep}
-              className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Zurück
@@ -636,10 +628,11 @@ export function ContactForm({ locations }: { locations: Location[] }) {
               type="button"
               onClick={nextStep}
               disabled={step === 1 ? !canAdvanceStep1 : step === 2 ? !canAdvanceStep2 : false}
+              aria-disabled={step === 1 ? !canAdvanceStep1 : step === 2 ? !canAdvanceStep2 : false}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 flex items-center gap-2 disabled:opacity-40"
             >
               Weiter
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Button>
@@ -647,17 +640,18 @@ export function ContactForm({ locations }: { locations: Location[] }) {
             <Button
               type="button"
               onClick={handleSubmit}
-              disabled={isSubmitting || !data.datenschutz || !data.standort}
+              disabled={isSubmitting || !data.datenschutz}
+              aria-disabled={isSubmitting || !data.datenschutz}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-2.5 text-base font-semibold disabled:opacity-40 flex items-center gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Wird gesendet ...
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+                  Wird gesendet …
                 </>
               ) : (
                 <>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
                   </svg>
                   Anfrage absenden
