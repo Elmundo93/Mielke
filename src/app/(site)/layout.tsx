@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Consent } from "@/components/layout/Consent";
+import { FlyerPopup } from "@/components/FlyerPopup";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,6 +10,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <main className="min-h-[70vh]">{children}</main>
       <Footer />
       <Consent />
+      <FlyerPopup />
     </>
   );
 }

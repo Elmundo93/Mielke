@@ -17,6 +17,8 @@ export function Header() {
     { name: "Orthopädieschuhtechnik", href: "/leistungen/orthopaedieschuhtechnik" },
   ];
 
+  const highlight = { name: "Pflegehilfsmittel", href: "/leistungen/pflegehilfsmittel" };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -31,16 +33,27 @@ export function Header() {
             <NavigationMenuItem>
               <NavigationMenuTrigger className="text-xl px-3 py-2 font-normal bg-transparent hover:bg-transparent">Leistungen</NavigationMenuTrigger>
               <NavigationMenuContent className="p-3">
-                <div className="grid min-w-[320px] gap-2 sm:min-w-[420px] sm:grid-cols-2">
-                  {services.map((service) => (
+                <div className="min-w-[320px] sm:min-w-[420px]">
+                  <div className="grid gap-2 sm:grid-cols-2 mb-2">
+                    {services.map((service) => (
+                      <Link
+                        key={service.href}
+                        className="text-lg px-3 py-2 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                        href={service.href}
+                      >
+                        {service.name}
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="border-t border-gray-100 dark:border-gray-800 pt-2">
                     <Link
-                      key={service.href}
-                      className="text-lg px-3 py-2 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
-                      href={service.href}
+                      href={highlight.href}
+                      className="flex items-center gap-2 px-3 py-2 rounded hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                     >
-                      {service.name}
+                      <span className="text-lg">{highlight.name}</span>
+                    
                     </Link>
-                  ))}
+                  </div>
                 </div>
               </NavigationMenuContent>
             </NavigationMenuItem>
@@ -105,6 +118,16 @@ export function Header() {
                       {service.name}
                     </Link>
                   ))}
+                  <Link
+                    href={highlight.href}
+                    className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {highlight.name}
+                    <span className="text-[10px] font-semibold uppercase tracking-wider bg-emerald-600 text-white px-1.5 py-0.5 rounded">
+                      Kostenlos
+                    </span>
+                  </Link>
                 </div>
               </div>
 
