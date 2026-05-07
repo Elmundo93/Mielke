@@ -67,7 +67,7 @@ async function main() {
 
     const content = await readFile(join(CONTENT_DIR, relPath), "utf8");
     await put(blobPath, content, {
-      access: "public",
+      access: "private",
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",

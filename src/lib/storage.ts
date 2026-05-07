@@ -38,37 +38,36 @@ function shouldFallbackToFilesystem(): boolean {
   return !IS_PRODUCTION;
 }
 
-export async function readContentFile<T>(
-  relPath: string,
-  defaults: T
-): Promise<T> {
+export async function readContentFile<T>(relPath: string, defaults: T): Promise<T> {
   if (USE_BLOB) {
     return readFromBlob(relPath, defaults);
   }
   return readFromFilesystem(relPath, defaults);
 }
 
+export async function readPrivateContentFile<T>(relPath: string, defaults: T): Promise<T> {
+  return readContentFile(relPath, defaults);
+}
+
 async function readFromBlob<T>(relPath: string, defaults: T): Promise<T> {
-  const { list } = await import("@vercel/blob");
+  const { get, BlobNotFoundError } = await import("@vercel/blob");
   const pathname = contentPath(relPath);
 
   try {
-    const { blobs } = await list({ prefix: pathname, token: BLOB_TOKEN });
-    const blob = blobs.find((b) => b.pathname === pathname);
+    const result = await get(pathname, { access: "private", token: BLOB_TOKEN });
 
-    if (!blob) {
+    if (!result || result.statusCode !== 200 || !result.stream) {
       if (shouldFallbackToFilesystem()) return readFromFilesystem(relPath, defaults);
       return defaults;
     }
 
-    const res = await fetch(blob.url, { cache: "no-store" });
-    if (!res.ok) {
-      throw new Error(`Blob konnte nicht gelesen werden (${res.status} ${res.statusText}): ${pathname}`);
-    }
-
-    const parsed = JSON.parse(await res.text());
+    const parsed = JSON.parse(await new Response(result.stream).text());
     return mergeWithDefaults(defaults, parsed);
   } catch (err) {
+    if (err instanceof BlobNotFoundError) {
+      if (shouldFallbackToFilesystem()) return readFromFilesystem(relPath, defaults);
+      return defaults;
+    }
     console.error(`[storage] Blob-Lesefehler für ${pathname}:`, err);
     if (shouldFallbackToFilesystem()) return readFromFilesystem(relPath, defaults);
     throw err;
@@ -94,7 +93,7 @@ export async function readContentDirEntries(relDir: string): Promise<ContentDirE
 }
 
 async function readDirFromBlob(relDir: string): Promise<ContentDirEntry[]> {
-  const { list } = await import("@vercel/blob");
+  const { list, get } = await import("@vercel/blob");
   const prefix = contentPath(`${relDir}/`);
 
   try {
@@ -108,13 +107,13 @@ async function readDirFromBlob(relDir: string): Promise<ContentDirEntry[]> {
 
     return Promise.all(
       jsonBlobs.map(async (b) => {
-        const res = await fetch(b.url, { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error(`Blob konnte nicht gelesen werden (${res.status} ${res.statusText}): ${b.pathname}`);
+        const result = await get(b.pathname, { access: "private", token: BLOB_TOKEN });
+        if (!result || result.statusCode !== 200 || !result.stream) {
+          throw new Error(`[storage] Blob nicht lesbar: ${b.pathname}`);
         }
         return {
           filename: path.basename(b.pathname),
-          content: await res.text(),
+          content: await new Response(result.stream).text(),
         };
       })
     );
@@ -143,10 +142,7 @@ async function readDirFromFilesystem(relDir: string): Promise<ContentDirEntry[]>
   }
 }
 
-export async function writeContentFile(
-  relPath: string,
-  content: string
-): Promise<void> {
+export async function writeContentFile(relPath: string, content: string): Promise<void> {
   if (USE_BLOB) {
     await writeToBlob(relPath, content);
   } else {
@@ -154,64 +150,11 @@ export async function writeContentFile(
   }
 }
 
-export async function readPrivateContentFile<T>(
-  relPath: string,
-  defaults: T
-): Promise<T> {
-  if (USE_BLOB) {
-    return readPrivateFromBlob(relPath, defaults);
-  }
-  return readFromFilesystem(relPath, defaults);
-}
-
-export async function writePrivateContentFile(
-  relPath: string,
-  content: string
-): Promise<void> {
-  if (USE_BLOB) {
-    await writePrivateToBlob(relPath, content);
-  } else {
-    await writeToFilesystem(relPath, content);
-  }
+export async function writePrivateContentFile(relPath: string, content: string): Promise<void> {
+  return writeContentFile(relPath, content);
 }
 
 async function writeToBlob(relPath: string, content: string): Promise<void> {
-  const { put } = await import("@vercel/blob");
-  await put(contentPath(relPath), content, {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    token: BLOB_TOKEN,
-  });
-}
-
-async function readPrivateFromBlob<T>(relPath: string, defaults: T): Promise<T> {
-  const { get, BlobNotFoundError } = await import("@vercel/blob");
-  const pathname = contentPath(relPath);
-
-  try {
-    const result = await get(pathname, { access: "private", token: BLOB_TOKEN });
-
-    if (!result || result.statusCode !== 200 || !result.stream) {
-      return defaults;
-    }
-
-    const text = await new Response(result.stream).text();
-    const parsed = JSON.parse(text);
-    return mergeWithDefaults(defaults, parsed);
-  } catch (err) {
-    if (err instanceof BlobNotFoundError) {
-      if (shouldFallbackToFilesystem()) return readFromFilesystem(relPath, defaults);
-      return defaults;
-    }
-    console.error(`[storage] Privater Blob-Lesefehler für ${pathname}:`, err);
-    if (shouldFallbackToFilesystem()) return readFromFilesystem(relPath, defaults);
-    throw err;
-  }
-}
-
-async function writePrivateToBlob(relPath: string, content: string): Promise<void> {
   const { put } = await import("@vercel/blob");
   await put(contentPath(relPath), content, {
     access: "private",
