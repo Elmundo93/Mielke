@@ -62,10 +62,7 @@ export function FlyerPopup() {
 
         {/* CTA */}
         <div className="bg-white px-5 py-4 flex items-center justify-between gap-4">
-          <p className="text-sm text-gray-600 leading-snug">
-            Neugierig geworden?<br />
-            <span className="text-gray-400 text-xs">Entdecken Sie unser Leistungsangebot.</span>
-          </p>
+        
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={close}
