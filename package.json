@@ -6,6 +6,7 @@
     "dev": "next dev --turbopack",
     "dev:no-turbopack": "next dev",
     "build": "node scripts/seed-blob.mjs && next build --turbopack",
+    "cleanup-blob": "node scripts/cleanup-blob.mjs",
     "start": "next start",
     "lint": "eslint"
   },
