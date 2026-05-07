@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:no-turbopack": "next dev",
-    "build": "next build --turbopack",
+    "build": "node scripts/seed-blob.mjs && next build --turbopack",
     "start": "next start",
     "lint": "eslint"
   },
