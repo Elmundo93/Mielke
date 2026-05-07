@@ -9,6 +9,24 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+const SERVICE_LABELS: Record<string, string> = {
+  "sanitätshaus": "Sanitätshaus",
+  "rehatechnik": "Rehatechnik",
+  "orthopaedietechnik": "Orthopädietechnik",
+  "orthopädietechnik": "Orthopädietechnik",
+  "orthopaedieschuhtechnik": "Orthopädieschuhtechnik",
+  "orthopädieschuhtechnik": "Orthopädieschuhtechnik",
+};
+
+const SERVICE_ICONS: Record<string, string> = {
+  "sanitätshaus": "🏥",
+  "rehatechnik": "♿",
+  "orthopaedietechnik": "🔬",
+  "orthopädietechnik": "🔬",
+  "orthopaedieschuhtechnik": "👟",
+  "orthopädieschuhtechnik": "👟",
+};
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const location = await getLocation(slug);
@@ -140,14 +158,11 @@ export default async function LocationDetail({ params }: { params: Promise<{ slu
                 <CardHeader>
                   <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <div className="text-emerald-600 dark:text-emerald-400 text-xl">
-                      {service === "sanitaetshaus" && "🏥"}
-                      {service === "rehatechnik" && "♿"}
-                      {service === "orthopaedietechnik" && "🔬"}
-                      {service === "orthopaedieschuhtechnik" && "👟"}
+                      {SERVICE_ICONS[service] ?? "🏥"}
                     </div>
                   </div>
-                  <CardTitle className="text-lg capitalize">
-                    {service.replace(/([A-Z])/g, ' $1').trim()}
+                  <CardTitle className="text-lg">
+                    {SERVICE_LABELS[service] ?? service}
                   </CardTitle>
                 </CardHeader>
               </Card>
