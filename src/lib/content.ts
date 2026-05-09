@@ -52,6 +52,62 @@ export type Job = {
   offer: string[];
 };
 
+export type ImpressumContent = {
+  companyName: string;
+  ownerName: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  phone: string;
+  email: string;
+  ustIdNr: string;
+  beruf: string;
+  kammer: string;
+  responsibleName: string;
+  responsibleAddress: string;
+  responsiblePostalCode: string;
+  responsibleCity: string;
+};
+
+export type DatenschutzContent = {
+  hostingAnbieter: string;
+  hostingStandort: string;
+  smtpAnbieter: string;
+  rezeptUploadAktiv: boolean;
+  datenschutzbeauftragterAktiv: boolean;
+  datenschutzbeauftragterName: string;
+  datenschutzbeauftragterEmail: string;
+  letzteAktualisierung: string;
+};
+
+export const DATENSCHUTZ_DEFAULTS: DatenschutzContent = {
+  hostingAnbieter: "",
+  hostingStandort: "",
+  smtpAnbieter: "",
+  rezeptUploadAktiv: true,
+  datenschutzbeauftragterAktiv: false,
+  datenschutzbeauftragterName: "",
+  datenschutzbeauftragterEmail: "",
+  letzteAktualisierung: "",
+};
+
+export const IMPRESSUM_DEFAULTS: ImpressumContent = {
+  companyName: "",
+  ownerName: "",
+  address: "",
+  postalCode: "",
+  city: "",
+  phone: "",
+  email: "",
+  ustIdNr: "",
+  beruf: "",
+  kammer: "",
+  responsibleName: "",
+  responsibleAddress: "",
+  responsiblePostalCode: "",
+  responsibleCity: "",
+};
+
 export type AboutUsContent = {
   title: string;
   hero: {
@@ -137,6 +193,14 @@ export async function getJobs(): Promise<Job[]> {
     console.error("Error loading jobs:", err);
     return [];
   }
+}
+
+export async function getImpressumContent(): Promise<ImpressumContent> {
+  return readContentFile<ImpressumContent>("impressum/content.json", IMPRESSUM_DEFAULTS);
+}
+
+export async function getDatenschutzContent(): Promise<DatenschutzContent> {
+  return readContentFile<DatenschutzContent>("datenschutz/content.json", DATENSCHUTZ_DEFAULTS);
 }
 
 export async function getAboutUsContent(): Promise<AboutUsContent | null> {

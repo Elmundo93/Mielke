@@ -15,16 +15,17 @@ interface FormData {
   anrede: string;
   vorname: string;
   nachname: string;
-  geburtsdatum: string;
   strasse: string;
   plz: string;
   ort: string;
   telefon: string;
   email: string;
-  // Step 3
+  // Step 3 (only for needsInsurance)
+  geburtsdatum: string;
   krankenkasse: string;
   versichertenart: string;
   versicherungsnummer: string;
+  gesundheitsdatenConsent: boolean;
   rezeptFiles: File[];
   // Step 4
   nachricht: string;
@@ -94,9 +95,9 @@ const ANLIEGEN_OPTIONS = [
 const VERSICHERTENARTEN = ["Mitglied", "Familienversicherter", "Rentner"];
 
 const NACHRICHT_PLACEHOLDER: Record<string, string> = {
-  rezept: "z.B. Ich möchte ein Kassenrezept für … einreichen. Bitte teilen Sie mir mit, wie ich es zusenden kann.",
-  hilfsmittel: "z.B. Ich benötige eine Versorgung mit … und würde gerne wissen, welche Möglichkeiten es gibt.",
-  termin: "z.B. Ich wünsche einen Termin zur Beratung über … am liebsten vormittags.",
+  rezept: "z.B. Ich möchte ein Kassenrezept einreichen. Bitte teilen Sie mir mit, wie ich vorgehen kann.",
+  hilfsmittel: "z.B. Ich würde gerne wissen, welche Hilfsmittel für mich in Frage kommen.",
+  termin: "z.B. Ich wünsche einen Termin zur Beratung am liebsten vormittags.",
   reparatur: "z.B. Mein Rollator hat ein defektes … – ich bitte um Abholung oder Terminvereinbarung.",
   allgemein: "Beschreiben Sie Ihr Anliegen – wir melden uns schnellstmöglich bei Ihnen.",
 };
@@ -178,15 +179,16 @@ export function ContactForm() {
     anrede: "",
     vorname: "",
     nachname: "",
-    geburtsdatum: "",
     strasse: "",
     plz: "",
     ort: "",
     telefon: "",
     email: "",
+    geburtsdatum: "",
     krankenkasse: "",
     versichertenart: "",
     versicherungsnummer: "",
+    gesundheitsdatenConsent: false,
     rezeptFiles: [],
     nachricht: "",
     datenschutz: false,
@@ -206,6 +208,7 @@ export function ContactForm() {
     data.vorname.trim().length >= 2 &&
     data.nachname.trim().length >= 2 &&
     (data.email.includes("@") || data.telefon.trim().length >= 6);
+  const canAdvanceStep3 = data.gesundheitsdatenConsent;
 
   const nextStep = () => {
     if (step === 2 && !needsInsurance) {
@@ -224,14 +227,15 @@ export function ContactForm() {
   };
 
   const addFiles = (files: FileList | File[]) => {
-    const allowed = ["application/pdf", "image/jpeg", "image/png", "image/webp", "image/heic"];
-    const valid = Array.from(files).filter((f) => allowed.includes(f.type) && f.size <= 10 * 1024 * 1024);
+    const allowed = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+    const valid = Array.from(files).filter(
+      (f) => allowed.includes(f.type) && f.size <= 5 * 1024 * 1024
+    );
     set("rezeptFiles", [...data.rezeptFiles, ...valid].slice(0, 5));
   };
 
   const removeFile = (index: number) => {
-    const updated = data.rezeptFiles.filter((_, i) => i !== index);
-    set("rezeptFiles", updated);
+    set("rezeptFiles", data.rezeptFiles.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -255,6 +259,9 @@ export function ContactForm() {
     formData.append("krankenkasse", data.krankenkasse);
     formData.append("versichertenart", data.versichertenart);
     formData.append("versicherungsnummer", data.versicherungsnummer);
+    if (needsInsurance && data.gesundheitsdatenConsent) {
+      formData.append("gesundheitsdatenConsent", "true");
+    }
     formData.append("message", data.nachricht);
     data.rezeptFiles.forEach((f) => formData.append("rezept", f));
 
@@ -381,12 +388,6 @@ export function ContactForm() {
               </div>
 
               <div>
-                <FieldLabel htmlFor="geburtsdatum">Geburtsdatum</FieldLabel>
-                <Input id="geburtsdatum" type="date" value={data.geburtsdatum} onChange={(e) => set("geburtsdatum", e.target.value)}
-                  autoComplete="bday" className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" />
-              </div>
-
-              <div>
                 <FieldLabel htmlFor="strasse">Straße & Hausnummer</FieldLabel>
                 <Input id="strasse" value={data.strasse} onChange={(e) => set("strasse", e.target.value)}
                   placeholder="Musterstraße 1" autoComplete="street-address" className="focus:ring-emerald-500 focus:border-emerald-500" />
@@ -429,14 +430,41 @@ export function ContactForm() {
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Versicherung & Dokumente</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
-              Bitte geben Sie Ihre Versicherungsdaten an und laden Sie ggf. Ihr Rezept hoch.
+              Für die Bearbeitung Ihrer Anfrage benötigen wir Ihre Versicherungsdaten.
             </p>
 
-            <div className="space-y-4">
+            {/* Art. 9 DSGVO Consent — muss zuerst akzeptiert werden */}
+            <div className={`flex gap-3 p-4 rounded-xl border-2 mb-6 transition-colors ${
+              data.gesundheitsdatenConsent
+                ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-900/20"
+                : "border-amber-300 bg-amber-50 dark:bg-amber-900/20"
+            }`}>
+              <input
+                id="gesundheitsdatenConsent"
+                type="checkbox"
+                checked={data.gesundheitsdatenConsent}
+                onChange={(e) => set("gesundheitsdatenConsent", e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer shrink-0"
+              />
+              <label htmlFor="gesundheitsdatenConsent" className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer leading-relaxed">
+                <span className="font-semibold block mb-1">Einwilligung zur Verarbeitung von Gesundheitsdaten</span>
+                Ich willige ausdrücklich in die Verarbeitung der von mir übermittelten Versicherungs- und Rezeptdaten als besondere Kategorien personenbezogener Daten gemäß{" "}
+                <span className="font-medium">Art. 9 Abs. 2 lit. a DSGVO</span> ein. Diese Daten werden ausschließlich zur Bearbeitung meiner Anfrage verwendet und nicht dauerhaft gespeichert.{" "}
+                <span className="text-emerald-600" aria-label="Pflichtfeld">*</span>
+              </label>
+            </div>
+
+            <div className={`space-y-4 ${!data.gesundheitsdatenConsent ? "opacity-40 pointer-events-none select-none" : ""}`} aria-hidden={!data.gesundheitsdatenConsent}>
+              <div>
+                <FieldLabel htmlFor="geburtsdatum">Geburtsdatum</FieldLabel>
+                <Input id="geburtsdatum" type="date" value={data.geburtsdatum} onChange={(e) => set("geburtsdatum", e.target.value)}
+                  autoComplete="bday" className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" disabled={!data.gesundheitsdatenConsent} />
+              </div>
+
               <div>
                 <FieldLabel htmlFor="krankenkasse">Krankenkasse</FieldLabel>
                 <Input id="krankenkasse" value={data.krankenkasse} onChange={(e) => set("krankenkasse", e.target.value)}
-                  placeholder="z.B. AOK, TK, Barmer ..." className="focus:ring-emerald-500 focus:border-emerald-500" />
+                  placeholder="z.B. AOK, TK, Barmer ..." className="focus:ring-emerald-500 focus:border-emerald-500" disabled={!data.gesundheitsdatenConsent} />
               </div>
 
               <div>
@@ -449,6 +477,7 @@ export function ContactForm() {
                       role="radio"
                       aria-checked={data.versichertenart === v}
                       onClick={() => set("versichertenart", v)}
+                      disabled={!data.gesundheitsdatenConsent}
                       className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                         data.versichertenart === v
                           ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400"
@@ -464,7 +493,7 @@ export function ContactForm() {
               <div>
                 <FieldLabel htmlFor="versicherungsnummer">Versicherungsnummer</FieldLabel>
                 <Input id="versicherungsnummer" value={data.versicherungsnummer} onChange={(e) => set("versicherungsnummer", e.target.value)}
-                  placeholder="A123456789" className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" />
+                  placeholder="A123456789" className="focus:ring-emerald-500 focus:border-emerald-500 max-w-xs" disabled={!data.gesundheitsdatenConsent} />
               </div>
 
               <div>
@@ -489,7 +518,7 @@ export function ContactForm() {
                     id="rezept-upload"
                     type="file"
                     multiple
-                    accept=".pdf,.jpg,.jpeg,.png,.webp,.heic"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp"
                     className="hidden"
                     onChange={(e) => e.target.files && addFiles(e.target.files)}
                   />
@@ -503,7 +532,7 @@ export function ContactForm() {
                       <span className="text-emerald-600 font-medium">Dateien auswählen</span>
                       <span className="text-gray-500 dark:text-gray-400"> oder hierher ziehen</span>
                     </div>
-                    <p className="text-xs text-gray-400">PDF, JPG, PNG, HEIC bis 10 MB · max. 5 Dateien</p>
+                    <p className="text-xs text-gray-400">PDF, JPG, PNG, WebP bis 5 MB · max. 5 Dateien</p>
                   </div>
                 </div>
 
@@ -542,10 +571,22 @@ export function ContactForm() {
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Ihre Nachricht</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-              Beschreiben Sie Ihr Anliegen in eigenen Worten – je mehr Details, desto gezielter können wir helfen.
+              Beschreiben Sie Ihr Anliegen in eigenen Worten.
             </p>
 
             <div className="space-y-5">
+              {/* Hinweis für Gesundheitsdaten-sensible Anliegen */}
+              {needsInsurance && (
+                <div className="flex gap-3 p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-xl text-sm text-blue-800 dark:text-blue-200">
+                  <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <p>
+                    Bitte geben Sie <strong>keine Diagnosen oder weiteren Gesundheitsdaten</strong> im Freitextfeld ein, die über Ihre Versicherungsangaben hinausgehen. Für Ihre Versorgung sind diese nicht erforderlich.
+                  </p>
+                </div>
+              )}
+
               {/* Nachrichtenfeld */}
               <div>
                 <FieldLabel htmlFor="nachricht">Nachricht</FieldLabel>
@@ -627,8 +668,18 @@ export function ContactForm() {
             <Button
               type="button"
               onClick={nextStep}
-              disabled={step === 1 ? !canAdvanceStep1 : step === 2 ? !canAdvanceStep2 : false}
-              aria-disabled={step === 1 ? !canAdvanceStep1 : step === 2 ? !canAdvanceStep2 : false}
+              disabled={
+                step === 1 ? !canAdvanceStep1 :
+                step === 2 ? !canAdvanceStep2 :
+                step === 3 ? !canAdvanceStep3 :
+                false
+              }
+              aria-disabled={
+                step === 1 ? !canAdvanceStep1 :
+                step === 2 ? !canAdvanceStep2 :
+                step === 3 ? !canAdvanceStep3 :
+                false
+              }
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 flex items-center gap-2 disabled:opacity-40"
             >
               Weiter

@@ -2,10 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import type { Job } from "@/lib/content";
+import type { Job, ImpressumContent, DatenschutzContent } from "@/lib/content";
 import { requireAdmin } from "@/lib/admin-auth";
 import { readContentFile, writeContentFile } from "@/lib/storage";
 import { readSmtpSettings, writeSmtpSettings, resolveSmtpConfig } from "@/lib/settings";
+
+// ── Audit Log ──────────────────────────────────────────────────────────────────
+
+function auditLog(action: string, details?: Record<string, unknown>): void {
+  console.info(JSON.stringify({ audit: true, action, ts: new Date().toISOString(), ...details }));
+}
 
 // ── Shared ─────────────────────────────────────────────────────────────────────
 
@@ -30,6 +36,84 @@ async function assertAdminResult(): Promise<{ ok: true } | { ok: false; error: s
     return { ok: true };
   } catch (err) {
     return adminError(err);
+  }
+}
+
+// ── Impressum ──────────────────────────────────────────────────────────────────
+
+const ImpressumSchema = z.object({
+  companyName: z.string(),
+  ownerName: z.string(),
+  address: z.string(),
+  postalCode: z.string(),
+  city: z.string(),
+  phone: z.string(),
+  email: z.string(),
+  ustIdNr: z.string(),
+  beruf: z.string(),
+  kammer: z.string(),
+  responsibleName: z.string(),
+  responsibleAddress: z.string(),
+  responsiblePostalCode: z.string(),
+  responsibleCity: z.string(),
+});
+
+export type ImpressumFormData = ImpressumContent;
+
+export async function saveImpressum(
+  data: ImpressumFormData
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdminResult();
+  if (!auth.ok) return auth;
+
+  const parsed = ImpressumSchema.safeParse(data);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  try {
+    await writeContentFile("impressum/content.json", JSON.stringify(parsed.data, null, 2));
+    auditLog("saveImpressum");
+    revalidatePath("/impressum");
+    revalidatePath("/admin/impressum");
+    return { ok: true };
+  } catch (err) {
+    console.error("saveImpressum error:", err);
+    return { ok: false, error: err instanceof Error ? err.message : "Konnte nicht gespeichert werden." };
+  }
+}
+
+// ── Datenschutz ────────────────────────────────────────────────────────────────
+
+const DatenschutzSchema = z.object({
+  hostingAnbieter: z.string(),
+  hostingStandort: z.string(),
+  smtpAnbieter: z.string(),
+  rezeptUploadAktiv: z.boolean(),
+  datenschutzbeauftragterAktiv: z.boolean(),
+  datenschutzbeauftragterName: z.string(),
+  datenschutzbeauftragterEmail: z.string(),
+  letzteAktualisierung: z.string(),
+});
+
+export type DatenschutzFormData = DatenschutzContent;
+
+export async function saveDatenschutz(
+  data: DatenschutzFormData
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const auth = await assertAdminResult();
+  if (!auth.ok) return auth;
+
+  const parsed = DatenschutzSchema.safeParse(data);
+  if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
+
+  try {
+    await writeContentFile("datenschutz/content.json", JSON.stringify(parsed.data, null, 2));
+    auditLog("saveDatenschutz");
+    revalidatePath("/datenschutz");
+    revalidatePath("/admin/datenschutz");
+    return { ok: true };
+  } catch (err) {
+    console.error("saveDatenschutz error:", err);
+    return { ok: false, error: err instanceof Error ? err.message : "Konnte nicht gespeichert werden." };
   }
 }
 
@@ -58,6 +142,7 @@ export async function saveSmtpSettings(
 
   try {
     await writeSmtpSettings(parsed.data);
+    auditLog("saveSmtpSettings");
     return { ok: true };
   } catch (err) {
     console.error("saveSmtpSettings error:", err);
@@ -145,6 +230,7 @@ export async function toggleJob(
 
     const next = jobs.map((j) => (j.id === id ? { ...j, active } : j));
     await writeJobs(next);
+    auditLog("toggleJob", { id, active });
     revalidatePath("/karriere");
     revalidatePath("/admin/karriere");
     return { ok: true };
@@ -171,6 +257,7 @@ export async function saveJob(
 
     jobs[idx] = parsed.data;
     await writeJobs(jobs);
+    auditLog("saveJob", { id });
     revalidatePath("/karriere");
     revalidatePath("/admin/karriere");
     revalidatePath(`/admin/karriere/${id}`);
@@ -227,6 +314,7 @@ export async function saveLocation(
   try {
     const safeSlug = parsedSlug.data;
     await writeContentFile(`locations/${safeSlug}.json`, JSON.stringify(parsed.data, null, 2));
+    auditLog("saveLocation", { slug: safeSlug });
     revalidatePath("/");
     revalidatePath("/standorte");
     revalidatePath(`/standorte/${safeSlug}`);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getImpressumContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Impressum | Sanitätshaus Mielke",
@@ -11,7 +12,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ImpressumPage() {
+export default async function ImpressumPage() {
+  const imp = await getImpressumContent();
+
   return (
     <div className="bg-white dark:bg-gray-950 min-h-screen">
       <div className="max-w-2xl mx-auto px-4 py-16">
@@ -23,10 +26,16 @@ export default function ImpressumPage() {
             Angaben gemäß § 5 TMG
           </h2>
           <div className="text-gray-700 dark:text-gray-300 space-y-0.5">
-            <p className="font-semibold text-gray-900 dark:text-white">Sanitätshaus Mielke</p>
-            <p>Helmut Mielke</p>
-            <p>Ermschwerder Straße 23</p>
-            <p>37213 Witzenhausen</p>
+            {imp.companyName && (
+              <p className="font-semibold text-gray-900 dark:text-white">{imp.companyName}</p>
+            )}
+            {imp.ownerName && <p>{imp.ownerName}</p>}
+            {imp.address && <p>{imp.address}</p>}
+            {(imp.postalCode || imp.city) && (
+              <p>
+                {imp.postalCode} {imp.city}
+              </p>
+            )}
           </div>
         </section>
 
@@ -36,63 +45,74 @@ export default function ImpressumPage() {
             Kontakt
           </h2>
           <div className="text-gray-700 dark:text-gray-300 space-y-1">
-            <p>
-              Telefon:{" "}
-              <a
-                href="tel:+4955429101120"
-                className="text-emerald-600 dark:text-emerald-400 hover:underline"
-              >
-                +49 5542 910112
-              </a>
-            </p>
-            <p>
-              E-Mail:{" "}
-              <a
-                href="mailto:post@ot-mielke.de"
-                className="text-emerald-600 dark:text-emerald-400 hover:underline"
-              >
-                post@ot-mielke.de
-              </a>
-            </p>
+            {imp.phone && (
+              <p>
+                Telefon:{" "}
+                <a
+                  href={`tel:${imp.phone.replace(/\s/g, "")}`}
+                  className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                >
+                  {imp.phone}
+                </a>
+              </p>
+            )}
+            {imp.email && (
+              <p>
+                E-Mail:{" "}
+                <a
+                  href={`mailto:${imp.email}`}
+                  className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                >
+                  {imp.email}
+                </a>
+              </p>
+            )}
           </div>
         </section>
 
         {/* Umsatzsteuer */}
-        <section className="mb-8">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-            Umsatzsteuer-ID
-          </h2>
-          <p className="text-gray-700 dark:text-gray-300">
-            Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:{" "}
-            <span className="font-medium text-gray-900 dark:text-white">
-              {/* USt-IdNr. hier eintragen, z. B. DE123456789 */}
-              [bitte eintragen]
-            </span>
-          </p>
-        </section>
+        {imp.ustIdNr && (
+          <section className="mb-8">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+              Umsatzsteuer-ID
+            </h2>
+            <p className="text-gray-700 dark:text-gray-300">
+              Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:{" "}
+              <span className="font-medium text-gray-900 dark:text-white">{imp.ustIdNr}</span>
+            </p>
+          </section>
+        )}
 
         {/* Berufsbezeichnung */}
-        <section className="mb-8">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-            Berufsbezeichnung und berufsrechtliche Regelungen
-          </h2>
-          <div className="text-gray-700 dark:text-gray-300 space-y-1">
-            <p>Berufsbezeichnung: Orthopädiemechanikermeister</p>
-            <p>Zuständige Kammer: Handwerkskammer Kassel</p>
-          </div>
-        </section>
+        {(imp.beruf || imp.kammer) && (
+          <section className="mb-8">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+              Berufsbezeichnung und berufsrechtliche Regelungen
+            </h2>
+            <div className="text-gray-700 dark:text-gray-300 space-y-1">
+              {imp.beruf && <p>Berufsbezeichnung: {imp.beruf}</p>}
+              {imp.kammer && <p>Zuständige Kammer: {imp.kammer}</p>}
+            </div>
+          </section>
+        )}
 
         {/* Verantwortlich für den Inhalt */}
-        <section className="mb-8">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
-            Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
-          </h2>
-          <div className="text-gray-700 dark:text-gray-300 space-y-0.5">
-            <p>Helmut Mielke</p>
-            <p>Ermschwerder Straße 23</p>
-            <p>37213 Witzenhausen</p>
-          </div>
-        </section>
+        {(imp.responsibleName || imp.responsibleAddress) && (
+          <section className="mb-8">
+            <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+              Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV
+            </h2>
+            <div className="text-gray-700 dark:text-gray-300 space-y-0.5">
+              {imp.responsibleName && <p>{imp.responsibleName}</p>}
+              {imp.responsibleAddress && <p>{imp.responsibleAddress}</p>}
+              {(imp.responsiblePostalCode || imp.responsibleCity) && (
+                <p>
+                  {imp.responsiblePostalCode} {imp.responsibleCity}
+                </p>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* Streitschlichtung */}
         <section className="mb-8">

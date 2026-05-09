@@ -32,11 +32,17 @@ export async function requireAdmin(): Promise<void> {
   const { password } = readAdminEnv();
   const cookieStore = await cookies();
   const session = cookieStore.get(SESSION_COOKIE)?.value;
-  const expected = createAdminSessionToken(password);
 
-  if (!session || session !== expected) {
-    throw new Error("Nicht autorisiert.");
-  }
+  if (!session) throw new Error("Nicht autorisiert.");
+
+  const expected = createAdminSessionToken(password);
+  const sessionBuf = Buffer.from(session, "hex");
+  const expectedBuf = Buffer.from(expected, "hex");
+
+  const valid =
+    sessionBuf.length === expectedBuf.length && timingSafeEqual(sessionBuf, expectedBuf);
+
+  if (!valid) throw new Error("Nicht autorisiert.");
 }
 
 export { SESSION_COOKIE };
