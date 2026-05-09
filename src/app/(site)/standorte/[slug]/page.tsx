@@ -12,6 +12,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 const SERVICE_LABELS: Record<string, string> = {
+  "sanitaetshaus": "Sanitätshaus",
   "sanitätshaus": "Sanitätshaus",
   "rehatechnik": "Rehatechnik",
   "orthopaedietechnik": "Orthopädietechnik",
@@ -21,6 +22,7 @@ const SERVICE_LABELS: Record<string, string> = {
 };
 
 const SERVICE_ICONS: Record<string, string> = {
+  "sanitaetshaus": "🏥",
   "sanitätshaus": "🏥",
   "rehatechnik": "♿",
   "orthopaedietechnik": "🔬",
