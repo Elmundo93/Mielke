@@ -54,54 +54,86 @@ export type Job = {
 
 export type ImpressumContent = {
   companyName: string;
+  rechtsform: string;
   ownerName: string;
   address: string;
   postalCode: string;
   city: string;
   phone: string;
   email: string;
+  website: string;
+  registerGericht: string;
+  registerNummer: string;
   ustIdNr: string;
+  aufsichtsbehoerde: string;
   beruf: string;
   kammer: string;
+  berufsordnung: string;
   responsibleName: string;
   responsibleAddress: string;
   responsiblePostalCode: string;
   responsibleCity: string;
 };
 
+type DsSection<T extends Record<string, unknown> = Record<never, never>> = { enabled: boolean } & T;
+
 export type DatenschutzContent = {
-  hostingAnbieter: string;
-  hostingStandort: string;
-  smtpAnbieter: string;
-  rezeptUploadAktiv: boolean;
-  datenschutzbeauftragterAktiv: boolean;
-  datenschutzbeauftragterName: string;
-  datenschutzbeauftragterEmail: string;
   letzteAktualisierung: string;
+  datenschutzbeauftragter: {
+    aktiv: boolean;
+    name: string;
+    email: string;
+  };
+  sections: {
+    hosting: DsSection<{ anbieter: string; standort: string }>;
+    kontaktformular: DsSection;
+    gesundheitsdaten: DsSection;
+    dateiupload: DsSection;
+    smtp: DsSection<{ anbieter: string }>;
+    logs: DsSection;
+    cookies: DsSection<{ details: string }>;
+    karten: DsSection<{ anbieter: string }>;
+    betroffenenrechte: DsSection;
+    weitergabe: DsSection;
+    tracking: DsSection;
+  };
 };
 
 export const DATENSCHUTZ_DEFAULTS: DatenschutzContent = {
-  hostingAnbieter: "",
-  hostingStandort: "",
-  smtpAnbieter: "",
-  rezeptUploadAktiv: true,
-  datenschutzbeauftragterAktiv: false,
-  datenschutzbeauftragterName: "",
-  datenschutzbeauftragterEmail: "",
   letzteAktualisierung: "",
+  datenschutzbeauftragter: { aktiv: false, name: "", email: "" },
+  sections: {
+    hosting: { enabled: true, anbieter: "", standort: "" },
+    kontaktformular: { enabled: true },
+    gesundheitsdaten: { enabled: true },
+    dateiupload: { enabled: true },
+    smtp: { enabled: true, anbieter: "" },
+    logs: { enabled: false },
+    cookies: { enabled: false, details: "" },
+    karten: { enabled: false, anbieter: "OpenStreetMap" },
+    betroffenenrechte: { enabled: true },
+    weitergabe: { enabled: true },
+    tracking: { enabled: true },
+  },
 };
 
 export const IMPRESSUM_DEFAULTS: ImpressumContent = {
   companyName: "",
+  rechtsform: "",
   ownerName: "",
   address: "",
   postalCode: "",
   city: "",
   phone: "",
   email: "",
+  website: "",
+  registerGericht: "",
+  registerNummer: "",
   ustIdNr: "",
+  aufsichtsbehoerde: "",
   beruf: "",
   kammer: "",
+  berufsordnung: "",
   responsibleName: "",
   responsibleAddress: "",
   responsiblePostalCode: "",

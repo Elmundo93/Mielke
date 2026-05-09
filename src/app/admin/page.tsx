@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { LogoutButton } from "./LogoutButton";
+import { getImpressumContent, getDatenschutzContent } from "@/lib/content";
+import { readSmtpSettings } from "@/lib/settings";
 
 const sections = [
   {
@@ -35,7 +38,7 @@ const sections = [
   {
     href: "/admin/impressum",
     title: "Impressum",
-    description: "Pflichtangaben gemäß § 5 TMG und § 18 Abs. 2 MStV bearbeiten.",
+    description: "Pflichtangaben gemäß § 5 DDG und § 18 Abs. 2 MStV bearbeiten.",
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -54,13 +57,50 @@ const sections = [
   },
 ];
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const [imp, ds, smtp] = await Promise.all([
+    getImpressumContent(),
+    getDatenschutzContent(),
+    readSmtpSettings(),
+  ]);
+
+  const checks = [
+    { label: "Impressum ausgefüllt", ok: !!(imp.companyName && imp.ownerName && imp.address) },
+    { label: "Datenschutz aktualisiert", ok: !!ds.letzteAktualisierung },
+    { label: "SMTP konfiguriert", ok: !!(smtp.host || process.env.SMTP_HOST) && !!(smtp.encryptedPass || smtp.pass || process.env.SMTP_PASS) },
+    { label: "Rezept-Upload aktiv", ok: ds.sections.dateiupload.enabled },
+    { label: "SMTP-Passwort verschlüsselt", ok: !!(smtp.encryptedPass || process.env.SMTP_PASS) },
+  ];
+
+  const allOk = checks.every((c) => c.ok);
+
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Admin</h1>
-          <p className="text-sm text-gray-500 mt-1">Sanitätshaus Mielke – Verwaltung</p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Admin</h1>
+            <p className="text-sm text-gray-500 mt-1">Sanitätshaus Mielke – Verwaltung</p>
+          </div>
+          <LogoutButton />
+        </div>
+
+        {/* Compliance status */}
+        <div className={`mb-6 rounded-xl border px-5 py-4 ${allOk ? "bg-emerald-50 border-emerald-200" : "bg-amber-50 border-amber-200"}`}>
+          <p className={`text-xs font-semibold uppercase tracking-wider mb-3 ${allOk ? "text-emerald-700" : "text-amber-700"}`}>
+            Status
+          </p>
+          <ul className="space-y-1.5">
+            {checks.map((c) => (
+              <li key={c.label} className="flex items-center gap-2 text-sm">
+                {c.ok
+                  ? <svg className="w-4 h-4 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  : <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                }
+                <span className={c.ok ? "text-gray-700" : "text-amber-800 font-medium"}>{c.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="space-y-3">

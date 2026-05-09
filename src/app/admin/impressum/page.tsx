@@ -24,7 +24,7 @@ export default async function ImpressumAdminPage() {
 
         <h1 className="text-2xl font-bold text-gray-900 mb-1">Impressum</h1>
         <p className="text-sm text-gray-500 mb-6">
-          Pflichtangaben gemäß § 5 TMG und § 18 Abs. 2 MStV bearbeiten.
+          Pflichtangaben gemäß § 5 DDG und § 18 Abs. 2 MStV bearbeiten.
         </p>
 
         <ImpressumEditForm initialValues={content} />

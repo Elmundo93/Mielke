@@ -30,8 +30,6 @@ function toFormData(location: Location): LocationFormData {
     city: location.city,
     introText: location.introText ?? "",
     heroImage: location.heroImage ?? "",
-    lat: location.lat ?? 0,
-    lon: location.lon ?? 0,
     services: location.services ?? [],
     accessibility: location.accessibility ?? [],
     openingHours: (location.openingHours ?? []).map((h) => ({
@@ -185,16 +183,6 @@ export default function LocationEditForm({
               <div className="col-span-2">
                 <label className={labelCls}>Ort</label>
                 <input className={inputCls} value={data.city} onChange={(e) => setField("city", e.target.value)} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={labelCls}>Breitengrad (lat)</label>
-                <input className={inputCls} type="number" step="any" value={data.lat} onChange={(e) => setField("lat", parseFloat(e.target.value) || 0)} />
-              </div>
-              <div>
-                <label className={labelCls}>Längengrad (lon)</label>
-                <input className={inputCls} type="number" step="any" value={data.lon} onChange={(e) => setField("lon", parseFloat(e.target.value) || 0)} />
               </div>
             </div>
           </section>

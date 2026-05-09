@@ -1,10 +1,13 @@
 import { readPrivateContentFile, writePrivateContentFile } from "@/lib/storage";
+import { decryptSecret, isEncryptionAvailable, type EncryptedValue } from "@/lib/crypto";
 
 export interface SmtpSettings {
   host?: string;
   port?: number;
   user?: string;
+  /** @deprecated plaintext — fallback only; use encryptedPass instead */
   pass?: string;
+  encryptedPass?: EncryptedValue;
   from?: string;
   fallbackTo?: string;
   secure?: boolean;
@@ -33,13 +36,27 @@ function parseBool(value: string | undefined, fallback: boolean): boolean {
   return ["1", "true", "yes", "on"].includes(value.toLowerCase());
 }
 
+function resolveStoredPass(stored: SmtpSettings): string {
+  if (process.env.SMTP_PASS) return process.env.SMTP_PASS;
+
+  if (stored.encryptedPass && isEncryptionAvailable()) {
+    try {
+      return decryptSecret(stored.encryptedPass);
+    } catch (err) {
+      console.error("[settings] SMTP-Passwort konnte nicht entschlüsselt werden:", err);
+    }
+  }
+
+  return stored.pass ?? "";
+}
+
 export function resolveSmtpConfig(stored: SmtpSettings): ResolvedSmtpConfig {
   const port = Number(process.env.SMTP_PORT ?? stored.port ?? 587);
   return {
     host: process.env.SMTP_HOST ?? stored.host ?? "",
     port,
     user: process.env.SMTP_USER ?? stored.user ?? "",
-    pass: process.env.SMTP_PASS ?? stored.pass ?? "",
+    pass: resolveStoredPass(stored),
     from:
       process.env.SMTP_FROM ??
       process.env.MAIL_FROM ??

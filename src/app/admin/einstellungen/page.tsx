@@ -47,12 +47,13 @@ export default async function EinstellungenPage() {
             host: resolved.host,
             port: resolved.port,
             user: resolved.user,
-            pass: resolved.pass,
+            pass: "",
             from: resolved.from,
             fallbackTo: resolved.fallbackTo,
             secure: resolved.secure,
           }}
           envOverrides={envOverrides}
+          hasStoredPass={!!stored.encryptedPass || !!stored.pass}
         />
       </div>
     </div>

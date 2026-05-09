@@ -1,10 +1,21 @@
 {
-  "hostingAnbieter": "Vercel Inc.",
-  "hostingStandort": "Frankfurt am Main (EU)",
-  "smtpAnbieter": "",
-  "rezeptUploadAktiv": true,
-  "datenschutzbeauftragterAktiv": false,
-  "datenschutzbeauftragterName": "",
-  "datenschutzbeauftragterEmail": "",
-  "letzteAktualisierung": "2026-05-08"
+  "letzteAktualisierung": "2026-05-08",
+  "datenschutzbeauftragter": {
+    "aktiv": false,
+    "name": "",
+    "email": ""
+  },
+  "sections": {
+    "hosting": { "enabled": true, "anbieter": "Vercel Inc.", "standort": "Frankfurt am Main (EU)" },
+    "kontaktformular": { "enabled": true },
+    "gesundheitsdaten": { "enabled": true },
+    "dateiupload": { "enabled": true },
+    "smtp": { "enabled": true, "anbieter": "" },
+    "logs": { "enabled": false },
+    "cookies": { "enabled": false, "details": "" },
+    "karten": { "enabled": true, "anbieter": "OpenStreetMap" },
+    "betroffenenrechte": { "enabled": true },
+    "weitergabe": { "enabled": true },
+    "tracking": { "enabled": true }
+  }
 }

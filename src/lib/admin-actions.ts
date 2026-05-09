@@ -6,6 +6,7 @@ import type { Job, ImpressumContent, DatenschutzContent } from "@/lib/content";
 import { requireAdmin } from "@/lib/admin-auth";
 import { readContentFile, writeContentFile } from "@/lib/storage";
 import { readSmtpSettings, writeSmtpSettings, resolveSmtpConfig } from "@/lib/settings";
+import { encryptSecret, isEncryptionAvailable } from "@/lib/crypto";
 
 // ── Audit Log ──────────────────────────────────────────────────────────────────
 
@@ -43,15 +44,21 @@ async function assertAdminResult(): Promise<{ ok: true } | { ok: false; error: s
 
 const ImpressumSchema = z.object({
   companyName: z.string(),
+  rechtsform: z.string(),
   ownerName: z.string(),
   address: z.string(),
   postalCode: z.string(),
   city: z.string(),
   phone: z.string(),
   email: z.string(),
+  website: z.string(),
+  registerGericht: z.string(),
+  registerNummer: z.string(),
   ustIdNr: z.string(),
+  aufsichtsbehoerde: z.string(),
   beruf: z.string(),
   kammer: z.string(),
+  berufsordnung: z.string(),
   responsibleName: z.string(),
   responsibleAddress: z.string(),
   responsiblePostalCode: z.string(),
@@ -83,15 +90,29 @@ export async function saveImpressum(
 
 // ── Datenschutz ────────────────────────────────────────────────────────────────
 
+const DsSection = <T extends z.ZodRawShape>(extra: T) =>
+  z.object({ enabled: z.boolean(), ...extra });
+
 const DatenschutzSchema = z.object({
-  hostingAnbieter: z.string(),
-  hostingStandort: z.string(),
-  smtpAnbieter: z.string(),
-  rezeptUploadAktiv: z.boolean(),
-  datenschutzbeauftragterAktiv: z.boolean(),
-  datenschutzbeauftragterName: z.string(),
-  datenschutzbeauftragterEmail: z.string(),
   letzteAktualisierung: z.string(),
+  datenschutzbeauftragter: z.object({
+    aktiv: z.boolean(),
+    name: z.string(),
+    email: z.string(),
+  }),
+  sections: z.object({
+    hosting: DsSection({ anbieter: z.string(), standort: z.string() }),
+    kontaktformular: DsSection({}),
+    gesundheitsdaten: DsSection({}),
+    dateiupload: DsSection({}),
+    smtp: DsSection({ anbieter: z.string() }),
+    logs: DsSection({}),
+    cookies: DsSection({ details: z.string() }),
+    karten: DsSection({ anbieter: z.string() }),
+    betroffenenrechte: DsSection({}),
+    weitergabe: DsSection({}),
+    tracking: DsSection({}),
+  }),
 });
 
 export type DatenschutzFormData = DatenschutzContent;
@@ -123,7 +144,8 @@ const SmtpSettingsSchema = z.object({
   host: z.string().min(1, "Host ist erforderlich."),
   port: z.coerce.number().int().positive("Port muss eine positive Zahl sein."),
   user: z.string().min(1, "Benutzer ist erforderlich."),
-  pass: z.string().min(1, "Passwort ist erforderlich."),
+  // Empty string means "keep existing password"; non-empty triggers re-encryption.
+  pass: z.string(),
   from: z.string().min(1, "Absenderadresse ist erforderlich."),
   fallbackTo: z.string().email("Muss eine gültige E-Mail-Adresse sein."),
   secure: z.boolean(),
@@ -141,7 +163,28 @@ export async function saveSmtpSettings(
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0].message };
 
   try {
-    await writeSmtpSettings(parsed.data);
+    const existing = await readSmtpSettings();
+
+    let encryptedPass = existing.encryptedPass;
+
+    if (parsed.data.pass !== "") {
+      if (!isEncryptionAvailable()) {
+        return { ok: false, error: "SMTP-Verschlüsselung ist nicht konfiguriert. Bitte SMTP_SETTINGS_ENCRYPTION_KEY in den Umgebungsvariablen setzen." };
+      }
+      encryptedPass = encryptSecret(parsed.data.pass);
+    } else if (!existing.encryptedPass && !existing.pass) {
+      return { ok: false, error: "Passwort ist erforderlich." };
+    }
+
+    await writeSmtpSettings({
+      host: parsed.data.host,
+      port: parsed.data.port,
+      user: parsed.data.user,
+      from: parsed.data.from,
+      fallbackTo: parsed.data.fallbackTo,
+      secure: parsed.data.secure,
+      ...(encryptedPass ? { encryptedPass } : {}),
+    });
     auditLog("saveSmtpSettings");
     return { ok: true };
   } catch (err) {
@@ -286,8 +329,6 @@ const LocationSchema = z.object({
   city: z.string(),
   introText: z.string(),
   heroImage: z.string(),
-  lat: z.number(),
-  lon: z.number(),
   services: z.array(z.string()).transform(normalizeList),
   accessibility: z.array(z.string()).transform(normalizeList),
   openingHours: z.array(OpeningHourSchema),

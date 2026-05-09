@@ -1,10 +1,10 @@
-import { ContactForm } from "@/components/contact/ContactForm";
+import { PublicContactForm } from "@/components/forms/PublicContactForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Kontaktformular",
   description:
-    "Kontaktformular zu Sanitätshaus Mielke – Rezept einsenden, Termin vereinbaren oder allgemeine Anfragen stellen.",
+    "Terminanfrage, Reparatur oder allgemeine Anfrage – schnell und einfach online an Sanitätshaus Mielke.",
 };
 
 export default function ContactFormPage() {
@@ -15,10 +15,10 @@ export default function ContactFormPage() {
           <p className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-2">Online-Service</p>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Ihr Anliegen in wenigen Schritten</h1>
           <p className="mt-3 text-gray-500 dark:text-gray-400">
-            Rezept einsenden, Termin anfragen oder Hilfsmittel bestellen – schnell und einfach online.
+            Termin vereinbaren, Reparatur anfragen oder eine allgemeine Frage stellen.
           </p>
         </div>
-        <ContactForm />
+        <PublicContactForm />
       </div>
     </div>
   );

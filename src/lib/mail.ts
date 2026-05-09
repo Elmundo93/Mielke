@@ -5,26 +5,32 @@ import { readSmtpSettings, resolveSmtpConfig } from "@/lib/settings";
 
 const ANLIEGEN_LABELS: Record<string, string> = {
   rezept: "Rezept einsenden",
-  hilfsmittel: "Hilfsmittelversorgung",
+  hilfsmittel: "Hilfsmittelanfrage",
   termin: "Terminanfrage",
   reparatur: "Reparatur & Abholung",
   allgemein: "Allgemeine Anfrage",
 };
+
+export interface HealthcareMailPayload {
+  type: "rezept" | "hilfsmittel";
+  anrede?: string;
+  vorname: string;
+  nachname: string;
+  email?: string;
+  telefon?: string;
+  standort?: string;
+  message?: string;
+  consentTimestamp: string;
+  files: File[];
+}
 
 export interface MailPayload {
   anliegen: string;
   anrede?: string;
   vorname: string;
   nachname: string;
-  geburtsdatum?: string;
-  strasse?: string;
-  plz?: string;
-  ort?: string;
   email?: string;
   telefon?: string;
-  krankenkasse?: string;
-  versichertenart?: string;
-  versicherungsnummer?: string;
   standort?: string;
   message?: string;
   files: File[];
@@ -100,6 +106,92 @@ export async function sendContactMail(payload: MailPayload): Promise<void> {
   }
 }
 
+export async function sendHealthcareMail(payload: HealthcareMailPayload): Promise<void> {
+  const typeLabel = payload.type === "rezept" ? "Rezept einsenden" : "Hilfsmittelanfrage";
+  const fullName = [payload.anrede, payload.vorname, payload.nachname].filter(Boolean).join(" ");
+
+  const [location, { transporter, config }] = await Promise.all([
+    payload.standort ? getLocation(payload.standort) : Promise.resolve(null),
+    createTransporter(),
+  ]);
+
+  const recipient = location?.email || config.fallbackTo;
+
+  const attachments: MailAttachment[] = await Promise.all(
+    payload.files
+      .filter((f) => f.size > 0)
+      .map(async (f) => ({
+        filename: f.name,
+        content: Buffer.from(await f.arrayBuffer()),
+        contentType: f.type || undefined,
+      }))
+  );
+
+  const internalHtml = `<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1);">
+    <div style="background:linear-gradient(135deg,#059669,#047857);padding:28px 32px;">
+      <p style="margin:0;color:#a7f3d0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Neue Anfrage</p>
+      <h1 style="margin:6px 0 0;color:#fff;font-size:22px;font-weight:700;">${escapeHtml(typeLabel)}</h1>
+    </div>
+    <div style="padding:28px 32px;">
+      <table style="border-collapse:collapse;width:100%;margin-bottom:20px;">
+        ${row("Name", fullName)}
+        ${row("Telefon", payload.telefon)}
+        ${row("E-Mail", payload.email)}
+        ${row("Standort", location?.name ?? payload.standort)}
+      </table>
+      ${payload.message ? `<div style="background:#f0fdf4;border-left:4px solid #059669;border-radius:0 8px 8px 0;padding:16px 20px;margin-bottom:20px;">
+        <p style="margin:0 0 4px;font-size:12px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:.06em;">Nachricht</p>
+        <p style="margin:0;font-size:13px;color:#374151;white-space:pre-wrap;">${escapeHtml(payload.message)}</p>
+      </div>` : ""}
+      <p style="margin:0;font-size:11px;color:#9ca3af;">Einwilligung (Art. 9 Abs. 2 lit. a DSGVO) erteilt: ${escapeHtml(payload.consentTimestamp)}</p>
+      ${attachments.length > 0 ? `<p style="margin:8px 0 0;font-size:12px;color:#059669;font-weight:600;">${attachments.length} Anhang/Anhänge</p>` : ""}
+    </div>
+    <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;">
+      <p style="margin:0;font-size:12px;color:#9ca3af;">Automatisch über das Webformular auf sanitaetshaus-mielke.de gesendet.</p>
+    </div>
+  </div>
+</body></html>`;
+
+  await transporter.sendMail({
+    from: config.from,
+    to: recipient,
+    replyTo: payload.email || undefined,
+    subject: `Neue Anfrage: ${typeLabel} – ${fullName}`,
+    html: internalHtml,
+    attachments: attachments.length > 0 ? attachments : undefined,
+  });
+
+  if (payload.email) {
+    const confirmHtml = `<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#f9fafb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:600px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.1);">
+    <div style="background:linear-gradient(135deg,#059669,#047857);padding:28px 32px;">
+      <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Vielen Dank, ${escapeHtml(payload.vorname)}!</h1>
+      <p style="margin:6px 0 0;color:#d1fae5;font-size:14px;">Wir haben Ihre Anfrage erhalten und melden uns zeitnah bei Ihnen.</p>
+    </div>
+    <div style="padding:28px 32px;">
+      <p style="font-size:15px;color:#374151;">Ihre Anfrage <strong>${escapeHtml(typeLabel)}</strong> wurde erfolgreich an ${escapeHtml(location?.name ?? payload.standort ?? "unser Team")} weitergeleitet.</p>
+      <p style="font-size:14px;color:#6b7280;">Für dringende Rückfragen: <strong>+49 5542 910112</strong></p>
+    </div>
+    <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;">
+      <p style="margin:0;font-size:12px;color:#9ca3af;">Sanitätshaus Mielke · Ermschwerder Straße 23 · 37213 Witzenhausen</p>
+    </div>
+  </div>
+</body></html>`;
+
+    await transporter.sendMail({
+      from: config.from,
+      to: payload.email,
+      subject: `Ihre ${typeLabel} bei Sanitätshaus Mielke`,
+      html: confirmHtml,
+    });
+  }
+}
+
 function escapeHtml(value: string | undefined): string {
   if (!value) return "";
   return value
@@ -133,10 +225,6 @@ function section(title: string, content: string) {
 function internalTemplate({
   payload, anliegenLabel, fullName, locationName,
 }: { payload: MailPayload; anliegenLabel: string; fullName: string; locationName?: string }) {
-  const hasInsurance = payload.krankenkasse || payload.versichertenart || payload.versicherungsnummer;
-  const adresse = [payload.strasse, [payload.plz, payload.ort].filter(Boolean).join(" ")]
-    .filter(Boolean).join(", ");
-
   return `<!DOCTYPE html>
 <html lang="de">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -152,28 +240,13 @@ function internalTemplate({
     <div style="padding:28px 32px;">
       ${section("Kontaktdaten",
         row("Name", fullName) +
-        row("Geburtsdatum", payload.geburtsdatum) +
-        row("Adresse", adresse) +
         row("Telefon", payload.telefon) +
         row("E-Mail", payload.email)
       )}
 
-      ${hasInsurance ? section("Versicherung",
-        row("Krankenkasse", payload.krankenkasse) +
-        row("Versichertenart", payload.versichertenart) +
-        row("Versicherungsnummer", payload.versicherungsnummer)
-      ) : ""}
-
       ${payload.message ? section("Nachricht",
         `<tr><td colspan="2" style="font-size:13px;color:#374151;line-height:1.6;white-space:pre-wrap;">${escapeHtml(payload.message)}</td></tr>`
       ) : ""}
-
-      ${payload.files.length > 0 ? `
-        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px 16px;">
-          <p style="margin:0 0 6px;font-size:12px;font-weight:600;color:#059669;text-transform:uppercase;letter-spacing:.05em;">Anhänge (${payload.files.length})</p>
-          ${payload.files.map(f => `<p style="margin:2px 0;font-size:13px;color:#374151;">📎 ${escapeHtml(f.name)}</p>`).join("")}
-        </div>
-      ` : ""}
     </div>
 
     <div style="background:#f9fafb;border-top:1px solid #e5e7eb;padding:16px 32px;text-align:center;">

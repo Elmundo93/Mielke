@@ -7,18 +7,70 @@
   "city": "Hessisch Lichtenau",
   "phone": "+49 5602 914772",
   "email": "post@ot-mielke.de",
-  "lat": 51.3401,
-  "lon": 9.8552,
+  "lat": 51.2029,
+  "lon": 9.7257,
   "openingHours": [
-    { "day": "Montag",     "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
-    { "day": "Dienstag",   "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
-    { "day": "Mittwoch",   "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
-    { "day": "Donnerstag", "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
-    { "day": "Freitag",    "opens": "09:00", "closes": "18:00", "pause": { "from": "13:00", "to": "15:00" } },
-    { "day": "Samstag",    "opens": "09:00", "closes": "12:00" }
+    {
+      "day": "Montag",
+      "opens": "09:00",
+      "closes": "18:00",
+      "pause": {
+        "from": "13:00",
+        "to": "15:00"
+      }
+    },
+    {
+      "day": "Dienstag",
+      "opens": "09:00",
+      "closes": "18:00",
+      "pause": {
+        "from": "13:00",
+        "to": "15:00"
+      }
+    },
+    {
+      "day": "Mittwoch",
+      "opens": "09:00",
+      "closes": "18:00",
+      "pause": {
+        "from": "13:00",
+        "to": "15:00"
+      }
+    },
+    {
+      "day": "Donnerstag",
+      "opens": "09:00",
+      "closes": "18:00",
+      "pause": {
+        "from": "13:00",
+        "to": "15:00"
+      }
+    },
+    {
+      "day": "Freitag",
+      "opens": "09:00",
+      "closes": "18:00",
+      "pause": {
+        "from": "13:00",
+        "to": "15:00"
+      }
+    },
+    {
+      "day": "Samstag",
+      "opens": "09:00",
+      "closes": "12:00"
+    }
   ],
-  "services": ["sanitaetshaus", "rehatechnik", "orthopaedietechnik", "orthopaedieschuhtechnik"],
-  "accessibility": ["Stufenloser Zugang", "Parkplätze vor Ort"],
+  "services": [
+    "sanitaetshaus",
+    "rehatechnik",
+    "orthopaedietechnik",
+    "orthopaedieschuhtechnik"
+  ],
+  "accessibility": [
+    "Stufenloser Zugang",
+    "Parkplätze vor Ort"
+  ],
   "introText": "In unserer größten Filiale in Hessisch Lichtenau befindet sich auch die Orthopädieschuhmacherwerkstatt.",
   "diashowImages": []
 }

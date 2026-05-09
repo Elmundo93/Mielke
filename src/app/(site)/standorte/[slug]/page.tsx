@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import { getLocation } from "@/lib/content";
+import { geocodeAddress } from "@/lib/geocode";
 import { Section } from "@/components/ui/Section";
 import { HoursTable } from "@/components/location/HoursTable";
 import { LocalBusinessBranchJsonLd } from "@/lib/schema";
+import { MapLeaflet } from "@/components/ui/MapLeaflet";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -74,6 +76,9 @@ export default async function LocationDetail({ params }: { params: Promise<{ slu
   const { slug } = await params;
   const loc = await getLocation(slug);
   if (!loc) return notFound();
+
+  const geocoded = await geocodeAddress(`${loc.address}, ${loc.postalCode} ${loc.city}, Deutschland`);
+  const mapCoords = geocoded ?? (loc.lat && loc.lon ? { lat: loc.lat, lon: loc.lon } : null);
 
   return (
     <>
@@ -148,6 +153,13 @@ export default async function LocationDetail({ params }: { params: Promise<{ slu
           )}
         </div>
       </Section>
+
+      {/* Map */}
+      {mapCoords ? (
+        <Section>
+          <MapLeaflet lat={mapCoords.lat} lon={mapCoords.lon} title={`Sanitätshaus Mielke ${loc.name}`} height="h-80" />
+        </Section>
+      ) : null}
 
       {/* Services Section */}
       {loc.services?.length ? (
