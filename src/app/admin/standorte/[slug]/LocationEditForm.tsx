@@ -211,12 +211,16 @@ export default function LocationEditForm({
               {hours.map((h, idx) => (
                 <div key={idx} className="border border-gray-100 rounded-lg p-3 space-y-2">
                   <div className="flex items-center gap-2">
-                    <input
+                    <select
                       className={inputCls + " flex-1"}
-                      placeholder="Tag (z.B. Montag)"
                       value={h.day}
                       onChange={(e) => updateHour(idx, "day", e.target.value)}
-                    />
+                    >
+                      <option value="">– Tag wählen –</option>
+                      {["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"].map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
                     <input
                       className={inputCls + " w-24"}
                       placeholder="09:00"

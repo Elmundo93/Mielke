@@ -68,12 +68,13 @@ export default function PflegehilfsmittelPage() {
         {/* Key facts */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto mt-16">
           {[
-            { value: "42 €", label: "monatlich kostenlos", sub: "übernimmt die Pflegekasse" },
-            { value: "Pflegegrad 1–5", label: "anspruchsberechtigt", sub: "häusliche Pflege erforderlich" },
+            { value: "bis zu 42€", label: "monatlich kostenlos", sub: "übernimmt die Pflegekasse" },
+            { value: "Pflegegrad", valueNumber: "1–5", label: "anspruchsberechtigt", sub: "häusliche Pflege erforderlich" },
             { value: "Kein Rezept", label: "notwendig", sub: "wir regeln die Beantragung" },
-          ].map(({ value, label, sub }) => (
+          ].map(({ value, valueNumber, label, sub }) => (
             <div key={label} className="text-center bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl px-6 py-6">
               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">{value}</div>
+              {valueNumber && <div className="text-2xl font-bold text-emerald-600 dark:text-white">{valueNumber}</div>}
               <div className="text-sm font-semibold text-gray-900 dark:text-white">{label}</div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{sub}</div>
             </div>

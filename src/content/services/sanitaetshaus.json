@@ -4,7 +4,7 @@
   "intro": "Individuelle Hilfsmittelversorgung.",
   "benefits": [],
   "heroImage": "/SanitätshausServiceImage.jpg",
-  "content": "In unseren vier Sanitätshäusern in Witzenhausen, Bad Sooden-Allendorf, Großalmerode und Hessisch Lichtenau bieten wir Ihnen ein breites Spektrum an Orthopädie-Technik und Sanitätsbedarf. Wir arbeiten ausschließlich mit namhaften Herstellern und Marken, um Ihnen verlässliche Qualitätsstandards sicherzustellen.\n\nUnser Produktangebot umfasst Kompressionsstrümpfe, Bandagen, Prothesen, Pflegemittel, Nacht- und Unterwäsche, Alltagshilfen, Schuhe und vieles mehr.\n\nAber vor allem bekommen Sie professionelle und freundliche Beratung auf Augenhöhe – Ihr Anliegen liegt uns am Herzen und unsere kompetenten und gut ausgebildeten Mitarbeiter nehmen sich gerne Zeit für Sie.",
+  "content": "In unseren vier Sanitätshäusern in Witzenhausen, Kaufungen, Großalmerode und Hessisch Lichtenau bieten wir Ihnen ein breites Spektrum an Orthopädietechnik und Sanitätsbedarf. Wir arbeiten ausschließlich mit namhaften Herstellern und Marken, um Ihnen verlässliche Qualitätsstandards sicherzustellen.\n\nUnser Produktangebot umfasst Kompressionsstrümpfe, Bandagen, Orthesen, Brustprothesen Prothesen, Pflegehilfsmittel, Nacht- und Unterwäsche, Bademode, Inkontinenzprodukte, Alltagshilfen, Schuhe und vieles mehr.\n\nAber vor allem bekommen Sie professionelle und freundliche Beratung auf Augenhöhe – Ihr Anliegen liegt uns am Herzen und unsere kompetenten und gut ausgebildeten Mitarbeiter nehmen sich gerne Zeit für Sie.",
   "categories": [
     {
       "title": "Kompressionsstrümpfe",
@@ -14,7 +14,7 @@
         "Maßanfertigungen",
         "verschiedene Hersteller* und Qualitäten",
         "Arten: Kniestrümpfe, Oberschenkelstrümpfe, Strumpfhosen, Armstrümpfe, Handschuhe, uvm.",
-        "Anziehhilfen, Ausziehhilfen, Pflegecreme für die Haut, Waschlotion für Kompressionsstrümpfe"
+        "Anziehhilfen, Ausziehhilfen, Pflegecreme für die Haut, Waschmittel für Kompressionsstrümpfe"
       ]
     },
     {
@@ -39,13 +39,13 @@
         "Prothesen, Teilprothesen",
         "Wäsche",
         "Bademoden",
-        "ausführliche Beratung von qualifizierten Mitarbeitern"
+        "Ausführliche Beratung von qualifizierten Mitarbeitern"
       ]
     },
     {
       "title": "Pflegehilfsmittel",
       "items": [
-        "Beantragung der Übernahme von Pflegehilfsmittel (40 Euro im Monat) bei den Krankenkassen im Falle einer Pflegestufe",
+        "Beantragung der Übernahme von Pflegehilfsmittel (42 Euro im Monat) bei den Pflegekassen im Falle eines Pflegegrades",
         "Waschlotionen",
         "Einmalhandschuhe",
         "Desinfektionsmittel",
@@ -58,10 +58,7 @@
       "items": [
         "Windeln",
         "Vorlagen",
-        "Katheter",
-        "Beinbeutel",
-        "etc.",
-        "ausführliche Beratung von qualifizierten Mitarbeitern"
+        "Ausführliche Beratung von qualifizierten Mitarbeitern"
       ]
     },
     {
@@ -92,7 +89,9 @@
       "items": [
         "Socken, Strümpfe, Strumpfhosen (auch für Diabetiker)",
         "Heizkissen und Heizdecken",
-        "Angorawäsche, Gelenkwärmer"
+        "Angorawäsche, Gelenkwärmer",
+        "Nachtwäsche",
+        "Bademode"
       ]
     },
     {
@@ -102,7 +101,7 @@
         "Therabänder",
         "Faszientherapieprodukte",
         "Gymnastikbälle- und matten",
-        "Schlafkissen (z.B Firma Tempur)",
+        "Schlafkissen (z.B TMX)",
         "uvm."
       ]
     }
