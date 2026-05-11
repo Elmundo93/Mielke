@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { saveDatenschutz, type DatenschutzFormData } from "@/lib/admin-actions";
-import type { DatenschutzContent } from "@/lib/content";
+import type { DatenschutzContent, ImpressumContent } from "@/lib/content";
 
 const inputCls =
   "w-full border border-gray-300 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500";
@@ -63,7 +64,13 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export default function DatenschutzEditForm({ initialValues }: { initialValues: DatenschutzFormData }) {
+export default function DatenschutzEditForm({
+  initialValues,
+  impressum,
+}: {
+  initialValues: DatenschutzFormData;
+  impressum: ImpressumContent;
+}) {
   const [data, setData] = useState<DatenschutzFormData>(initialValues);
   const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -102,8 +109,66 @@ export default function DatenschutzEditForm({ initialValues }: { initialValues: 
 
   const s = data.sections;
 
+  const verantwortlicher = [impressum.companyName, impressum.rechtsform].filter(Boolean).join(" ");
+  const adresse = [impressum.address, `${impressum.postalCode} ${impressum.city}`.trim()].filter(Boolean).join(", ");
+
   return (
     <div className="space-y-6">
+
+      {/* Verantwortlicher — aus dem Impressum */}
+      <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Verantwortlicher (DSGVO)</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Diese Angaben stammen aus dem Impressum und erscheinen im ersten Abschnitt der Datenschutzerklärung.
+            </p>
+          </div>
+          <Link
+            href="/admin/impressum"
+            className="shrink-0 text-xs font-medium text-emerald-600 hover:text-emerald-700 border border-emerald-200 hover:border-emerald-400 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            Im Impressum bearbeiten →
+          </Link>
+        </div>
+        <div className="border-t border-gray-100 pt-3 grid grid-cols-1 gap-1.5 text-sm">
+          {verantwortlicher && (
+            <div className="flex gap-2">
+              <span className="w-28 shrink-0 text-xs text-gray-400">Unternehmen</span>
+              <span className="text-gray-700 font-medium">{verantwortlicher}</span>
+            </div>
+          )}
+          {impressum.ownerName && (
+            <div className="flex gap-2">
+              <span className="w-28 shrink-0 text-xs text-gray-400">Inhaber</span>
+              <span className="text-gray-700">{impressum.ownerName}</span>
+            </div>
+          )}
+          {adresse && (
+            <div className="flex gap-2">
+              <span className="w-28 shrink-0 text-xs text-gray-400">Adresse</span>
+              <span className="text-gray-700">{adresse}</span>
+            </div>
+          )}
+          {impressum.phone && (
+            <div className="flex gap-2">
+              <span className="w-28 shrink-0 text-xs text-gray-400">Telefon</span>
+              <span className="text-gray-700">{impressum.phone}</span>
+            </div>
+          )}
+          {impressum.email && (
+            <div className="flex gap-2">
+              <span className="w-28 shrink-0 text-xs text-gray-400">E-Mail</span>
+              <span className="text-gray-700">{impressum.email}</span>
+            </div>
+          )}
+          {!verantwortlicher && !impressum.ownerName && !adresse && !impressum.phone && !impressum.email && (
+            <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+              ⚠ Noch keine Impressum-Daten hinterlegt. Bitte zuerst das Impressum ausfüllen.
+            </p>
+          )}
+        </div>
+      </div>
 
       {/* Modular sections */}
       <div>

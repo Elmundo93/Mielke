@@ -69,7 +69,7 @@ export default function ImpressumEditForm({ initialValues }: { initialValues: Im
         <Field label="Inhaber / Geschäftsführer">
           <input type="text" value={data.ownerName}
             onChange={(e) => set("ownerName", e.target.value)}
-            placeholder="Helmut Mielke" className={inputCls} />
+            placeholder="Carsten Mielke" className={inputCls} />
         </Field>
       </SectionCard>
 

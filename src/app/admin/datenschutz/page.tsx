@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { getDatenschutzContent } from "@/lib/content";
+import { getDatenschutzContent, getImpressumContent } from "@/lib/content";
 import DatenschutzEditForm from "./DatenschutzEditForm";
 
 export default async function DatenschutzAdminPage() {
-  const content = await getDatenschutzContent();
+  const [content, impressum] = await Promise.all([
+    getDatenschutzContent(),
+    getImpressumContent(),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-4">
@@ -27,7 +30,7 @@ export default async function DatenschutzAdminPage() {
           Hosting, E-Mail-Versand, optionale Abschnitte und Stand konfigurieren.
         </p>
 
-        <DatenschutzEditForm initialValues={content} />
+        <DatenschutzEditForm initialValues={content} impressum={impressum} />
       </div>
     </div>
   );
