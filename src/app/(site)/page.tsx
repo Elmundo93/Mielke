@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 import { OrganizationJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Startseite",
+  title: { absolute: "Sanitätshaus Mielke – Orthopädietechnik & Rehatechnik seit 1989" },
   description: "Sanitätshaus Mielke - Ihr Spezialist für Orthopädietechnik und Rehatechnik seit 1989. 5 Standorte in Hessen: Witzenhausen, Hessisch Lichtenau, Großalmerode, Kaufungen, Bad Sooden-Allendorf. Individuelle Versorgung mit Prothesen, Orthesen, Einlagen und Maßschuhen.",
   keywords: [
     "Sanitätshaus Mielke",

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { BreadcrumbListJsonLd, ServiceJsonLd, FAQPageJsonLd } from "@/lib/schema";
 
 const serviceIcons: Record<string, string> = {
   sanitaetshaus: "🏥",
@@ -108,6 +109,13 @@ export default async function ServiceDetail({ params }: { params: Promise<{ slug
 
   return (
     <>
+      <BreadcrumbListJsonLd items={[
+        { name: "Startseite", url: "/" },
+        { name: "Leistungen", url: "/leistungen" },
+        { name: s.title, url: `/leistungen/${s.slug}` },
+      ]} />
+      <ServiceJsonLd name={s.title} description={s.intro} slug={s.slug} image={s.heroImage} />
+      {s.faqs?.length ? <FAQPageJsonLd faqs={s.faqs} /> : null}
       {/* Hero Section */}
       <Section>
         <div className="grid lg:grid-cols-2 gap-12 items-center">

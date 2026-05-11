@@ -3,7 +3,7 @@ import { getLocation } from "@/lib/content";
 import { geocodeAddress } from "@/lib/geocode";
 import { Section } from "@/components/ui/Section";
 import { HoursTable } from "@/components/location/HoursTable";
-import { LocalBusinessBranchJsonLd } from "@/lib/schema";
+import { LocalBusinessBranchJsonLd, BreadcrumbListJsonLd } from "@/lib/schema";
 import { MapLeaflet } from "@/components/ui/MapLeaflet";
 import Image from "next/image";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,6 +84,11 @@ export default async function LocationDetail({ params }: { params: Promise<{ slu
 
   return (
     <>
+      <BreadcrumbListJsonLd items={[
+        { name: "Startseite", url: "/" },
+        { name: "Standorte", url: "/standorte" },
+        { name: loc.name, url: `/standorte/${loc.slug}` },
+      ]} />
       {LocalBusinessBranchJsonLd({ location: loc })}
       
       {/* Hero Section */}

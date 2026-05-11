@@ -28,11 +28,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly", 
       priority: 0.7 
     },
-    { 
-      url: `${base}/kontakt`, 
+    {
+      url: `${base}/kontakt`,
       lastModified: new Date(),
-      changeFrequency: "monthly", 
-      priority: 0.8 
+      changeFrequency: "monthly",
+      priority: 0.8
+    },
+    {
+      url: `${base}/impressum`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
   ];
   
