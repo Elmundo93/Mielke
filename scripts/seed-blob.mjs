@@ -67,7 +67,6 @@ async function main() {
 
   let uploaded = 0;
   let deleted = 0;
-  let skipped = 0;
 
   for (const dir of managedDirs) {
     const prefix = `content/${dir}/`;
@@ -81,15 +80,10 @@ async function main() {
       deleted += stale.length;
     }
 
-    // Fehlende Blobs hochladen
-    const existingPaths = new Set(blobs.map((b) => b.pathname));
+    // Alle lokalen Dateien hochladen (überschreibt bestehende Blobs)
     for (const [relPath, absPath] of localFiles) {
       const blobPath = `content/${relPath}`;
       if (!blobPath.startsWith(prefix)) continue;
-      if (existingPaths.has(blobPath)) {
-        skipped++;
-        continue;
-      }
       const content = await readFile(absPath, "utf8");
       await put(blobPath, content, {
         access: "private",
@@ -104,7 +98,7 @@ async function main() {
   }
 
   console.log(
-    `[seed-blob] Fertig – ${uploaded} hochgeladen, ${deleted} gelöscht, ${skipped} unverändert.`
+    `[seed-blob] Fertig – ${uploaded} hochgeladen, ${deleted} gelöscht.`
   );
 }
 
